@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>指标概览 — 可编辑数据看板</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/10.1.2/gridstack.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/10.1.2/gridstack-all.min.js"></script>
+  <style>
+    .card-hover { transition: all 0.2s ease; }
+    .card-hover:hover { transform: translateY(-1px); box-shadow: 0 6px 20px -4px rgba(0,0,0,0.08); }
+    .table-row:nth-child(even) { background-color: #f8fafc; }
+    .table-row:hover { background-color: #eff6ff; }
+    .progress-bar { transition: width 0.8s ease; }
+    .grid-stack { background: transparent; }
+    .grid-stack-item-content {
+      background: white; border-radius: 0.75rem; border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      display: flex; flex-direction: column; overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+    .grid-stack-item-content:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .grid-stack-placeholder {
+      background: rgba(59, 130, 246, 0.08) !important;
+      border: 2px dashed #93c5fd !important; border-radius: 0.75rem !important;
+    }
+    .grid-stack-item > .grid-stack-item-content > .widget-header { cursor: grab; }
+    .grid-stack-item > .grid-stack-item-content > .widget-header:active { cursor: grabbing; }
+    .grid-stack-item > .ui-resizable-se {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="%2394a3b8" d="M8.5 8.5L11 11M5.5 8.5L11 5.5M8.5 5.5L11 2.5"/></svg>');
+      background-repeat: no-repeat; background-position: center;
+      width: 14px; height: 14px; bottom: 4px; right: 4px;
+    }
+    .edit-mode .grid-stack-item-content { border-color: #3b82f6; }
+    .edit-mode .widget-header { background: #eff6ff; }
+    .widget-actions { opacity: 0; transition: opacity 0.2s; }
+    .grid-stack-item-content:hover .widget-actions { opacity: 1; }
+    .config-panel-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+      z-index: 200; display: none; align-items: center; justify-content: center;
+    }
+    .config-panel-overlay.active { display: flex; }
+    .config-panel {
+      background: white; border-radius: 1rem; width: 90%; max-width: 520px;
+      max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .config-section { border-top: 1px solid #e2e8f0; padding-top: 1rem; margin-top: 1rem; }
+    .config-section-title { font-size: 0.75rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+    [contenteditable="true"] { outline: none; border-bottom: 1px dashed #93c5fd; cursor: text; }
+    [contenteditable="true"]:focus { border-bottom-color: #3b82f6; }
+    .color-swatch { width: 24px; height: 24px; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; }
+    .color-swatch:hover { transform: scale(1.1); }
+    .color-swatch.active { border-color: #1e293b; box-shadow: 0 0 0 2px white, 0 0 0 4px #1e293b; }
+    .type-card {
+      border: 2px solid #e2e8f0; border-radius: 0.75rem; padding: 1rem; cursor: pointer;
+      transition: all 0.2s; text-align: center;
+    }
+    .type-card:hover { border-color: #3b82f6; background: #eff6ff; }
+    .type-card.selected { border-color: #3b82f6; background: #dbeafe; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+    .add-type-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+      z-index: 200; display: none; align-items: center; justify-content: center;
+    }
+    .add-type-overlay.active { display: flex; }
+    .add-type-panel {
+      background: white; border-radius: 1rem; width: 90%; max-width: 420px;
+      padding: 2rem; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+  <!-- 添加组件类型选择 -->
+  <div id="addTypeOverlay" class="add-type-overlay" onclick="closeAddType(event)">
+    <div class="add-type-panel" onclick="event.stopPropagation()">
+      <div class="flex justify-between items-center mb-5">
+        <h3 class="text-lg font-semibold text-slate-900">添加组件</h3>
+        <button onclick="closeAddType()" class="text-slate-400 hover:text-slate-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="text-sm text-slate-500 mb-4">选择要添加的组件类型，添加后会自动打开配置面板。</p>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="type-card" onclick="selectType('kpi')">
+          <div class="text-2xl mb-1">📊</div>
+          <div class="text-sm font-medium text-slate-800">KPI 卡片</div>
+          <div class="text-xs text-slate-400 mt-0.5">展示多个关键指标</div>
+        </div>
+        <div class="type-card" onclick="selectType('chart')">
+          <div class="text-2xl mb-1">📈</div>
+          <div class="text-sm font-medium text-slate-800">图表</div>
+          <div class="text-xs text-slate-400 mt-0.5">柱状图/折线图/饼图</div>
+        </div>
+        <div class="type-card" onclick="selectType('combo')">
+          <div class="text-2xl mb-1">🎯</div>
+          <div class="text-sm font-medium text-slate-800">组合卡片</div>
+          <div class="text-xs text-slate-400 mt-0.5">多指标整合展示</div>
+        </div>
+        <div class="type-card" onclick="selectType('table')">
+          <div class="text-2xl mb-1">📋</div>
+          <div class="text-sm font-medium text-slate-800">数据表格</div>
+          <div class="text-xs text-slate-400 mt-0.5">明细数据列表</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 配置面板模态框 -->
+  <div id="configOverlay" class="config-panel-overlay" onclick="closeConfig(event)">
+    <div class="config-panel p-6" onclick="event.stopPropagation()">
+      <div class="flex justify-between items-center mb-5">
+        <h3 class="text-lg font-semibold text-slate-900">组件配置</h3>
+        <button onclick="closeConfig()" class="text-slate-400 hover:text-slate-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="configForm" class="space-y-4"></div>
+      <div class="flex justify-end gap-2 mt-6 pt-4 border-t border-slate-100">
+        <button onclick="closeConfig()" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 rounded-md">取消</button>
+        <button onclick="saveConfig()" class="px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-md">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">K</div>
+          <div>
+            <h1 class="text-lg font-semibold text-slate-900">指标概览</h1>
+            <p class="text-xs text-slate-500">飞书多维表格数据看板</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span id="lastUpdated" class="text-xs text-slate-500 hidden sm:block">数据更新：--</span>
+          <button onclick="openAddType()" class="px-3 py-1.5 text-sm font-medium text-emerald-700 bg-emerald-50 rounded-md hover:bg-emerald-100 transition-colors">+ 添加组件</button>
+          <button id="editToggle" onclick="toggleEditMode()" class="px-3 py-1.5 text-sm font-medium text-slate-700 bg-slate-100 rounded-md hover:bg-slate-200 transition-colors">编辑布局</button>
+          <button onclick="saveLayoutToHash()" class="px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors">保存布局</button>
+          <button onclick="exportLayout()" class="px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors">导出布局</button>
+          <button onclick="document.getElementById('layoutInput').click()" class="px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors">导入布局</button>
+          <input type="file" id="layoutInput" accept=".json" class="hidden" onchange="importLayout(this)">
+          <button onclick="resetLayout()" class="px-3 py-1.5 text-sm font-medium text-slate-700 bg-slate-100 rounded-md hover:bg-slate-200 transition-colors">重置布局</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div id="editBanner" class="hidden bg-blue-600 text-white text-sm text-center py-2">
+    当前处于编辑模式，你可以拖拽组件调整位置，拖动右下角调整大小，点击配置按钮修改数据源、文字、颜色和尺寸。
+  </div>
+
+  <main class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="grid-stack"></div>
+  </main>
+
+  <div class="text-center text-xs text-slate-400 py-4">
+    数据看板 v3.0 · 数据来源：飞书多维表格「指标概览」 · 生成时间：<span id="generatedAt">--</span>
+  </div>
+
+  <script>
+    // ============================================================
+    // 数据层
+    // ============================================================
+    let rawRecords = [
+      { category: "规范性指标", monthlyAchievement: "85%", monthlyTarget: "95%", name: "交付规范性-G类", formula: "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)", total: "NA", achievementRate: 0.894736842 },
+      { category: "规范性指标", monthlyAchievement: "91%", monthlyTarget: "90%", name: "交付规范性-K类", formula: "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)", total: "NA", achievementRate: 1.011111111 },
+      { category: "规范性指标", monthlyAchievement: "90%", monthlyTarget: "90%", name: "交付规范性-P类", formula: "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)", total: "NA", achievementRate: 1 },
+      { category: "规范性指标", monthlyAchievement: "80%", monthlyTarget: "85%", name: "流程适用性-G类", formula: "=1-不适用/(总数-进行中)", total: "NA", achievementRate: 0.941176471 },
+      { category: "规范性指标", monthlyAchievement: "70%", monthlyTarget: "75%", name: "流程适用性-K类", formula: "=1-不适用/(总数-进行中)", total: "NA", achievementRate: 0.933333333 },
+      { category: "规范性指标", monthlyAchievement: "50", monthlyTarget: "70", name: "AI检核交付质量-G类", formula: "=AVERAGE(AI1,AI2,...AIn)", total: "NA", achievementRate: 0.714285714 },
+      { category: "规范性指标", monthlyAchievement: "50", monthlyTarget: "70", name: "AI检核交付质量-K类", formula: "=AVERAGE(AI1,AI2,...AIn)", total: "NA", achievementRate: 0.714285714 },
+      { category: "组织及文化建设", monthlyAchievement: "4", monthlyTarget: "4", name: "流程培训场次", formula: "含火炬计划、千将计划、中心培训等。", total: "8", achievementRate: 1 },
+      { category: "组织及文化建设", monthlyAchievement: "9.0", monthlyTarget: "8.4", name: "流程满意度", formula: "每半年度一次调研", total: "NA", achievementRate: 1.071428571 },
+      { category: "基础信息", monthlyAchievement: "25", monthlyTarget: "NA", name: "XPD项目", formula: "本月监控/年度累计", total: "50", achievementRate: null },
+      { category: "基础信息", monthlyAchievement: "3000", monthlyTarget: "NA", name: "XPD任务", formula: "本月监控/年度累计", total: "1.2W", achievementRate: null },
+      { category: "系统访问量", monthlyAchievement: "20W", monthlyTarget: "NA", name: "XPD系统", formula: "本月/年度累计", total: "80W", achievementRate: null },
+      { category: "系统访问量", monthlyAchievement: "3000", monthlyTarget: "NA", name: "XPD流程", formula: "本月/年度累计", total: "1W", achievementRate: null },
+      { category: "系统访问量", monthlyAchievement: "3000", monthlyTarget: "NA", name: "浩瀚知识库", formula: "本月/年度累计", total: "1W", achievementRate: null },
+      { category: "基础信息", monthlyAchievement: "39", monthlyTarget: "NA", name: "XPD流程发布（L4）", formula: "本月发布/流程总数", total: "312", achievementRate: null },
+      { category: "基础信息", monthlyAchievement: "200", monthlyTarget: "NA", name: "XPD知识沉淀", formula: "本月新增/文档总数", total: "1.3W", achievementRate: null },
+      { category: "组织及文化建设", monthlyAchievement: "1", monthlyTarget: "1", name: "流程委员会运营", formula: "PTC每半年度一次、XPD-PTC 每季度一次", total: "2", achievementRate: 1 },
+      { category: "组织及文化建设", monthlyAchievement: "90%", monthlyTarget: "85%", name: "流程问题管理", formula: "=1-延期未完成/问题总数", total: "NA", achievementRate: 1.058823529 }
+    ];
+
+    function parseValue(val) {
+      if (!val || val === "NA" || val === "") return null;
+      val = String(val).trim();
+      if (val.endsWith("%")) return parseFloat(val);
+      if (val.endsWith("W")) { const num = parseFloat(val.replace("W", "")); return num * 10000; }
+      const num = parseFloat(val.replace(/,/g, ""));
+      return isNaN(num) ? null : num;
+    }
+
+    function formatRate(rate) {
+      if (rate === null || rate === undefined) return "--";
+      return (rate * 100).toFixed(1) + "%";
+    }
+
+    let indicators = [];
+    let categories = [];
+    let grid = null;
+    let charts = {};
+    let isEditMode = false;
+    let activeConfigWidget = null;
+    let widgetConfigs = {};
+    let widgetIdCounter = 0;
+    let pendingWidgetType = null;
+
+    function processData(records) {
+      indicators = records.map(r => ({
+        ...r,
+        achievementNum: parseValue(r.monthlyAchievement),
+        targetNum: parseValue(r.monthlyTarget),
+        totalNum: parseValue(r.total),
+        rateNum: r.achievementRate
+      }));
+      categories = [...new Set(indicators.map(r => r.category))];
+    }
+
+    processData(rawRecords);
+
+    const COLOR_MAP = {
+      blue: { bg: "bg-blue-500", grad: "from-blue-500 to-blue-600", text: "text-blue-600", light: "bg-blue-50" },
+      indigo: { bg: "bg-indigo-500", grad: "from-indigo-500 to-indigo-600", text: "text-indigo-600", light: "bg-indigo-50" },
+      cyan: { bg: "bg-cyan-500", grad: "from-cyan-500 to-cyan-600", text: "text-cyan-600", light: "bg-cyan-50" },
+      emerald: { bg: "bg-emerald-500", grad: "from-emerald-500 to-emerald-600", text: "text-emerald-600", light: "bg-emerald-50" },
+      amber: { bg: "bg-amber-500", grad: "from-amber-500 to-amber-600", text: "text-amber-600", light: "bg-amber-50" },
+      rose: { bg: "bg-rose-500", grad: "from-rose-500 to-rose-600", text: "text-rose-600", light: "bg-rose-50" },
+      purple: { bg: "bg-purple-500", grad: "from-purple-500 to-purple-600", text: "text-purple-600", light: "bg-purple-50" },
+      slate: { bg: "bg-slate-500", grad: "from-slate-500 to-slate-600", text: "text-slate-600", light: "bg-slate-50" },
+      orange: { bg: "bg-orange-500", grad: "from-orange-500 to-orange-600", text: "text-orange-600", light: "bg-orange-50" },
+      pink: { bg: "bg-pink-500", grad: "from-pink-500 to-pink-600", text: "text-pink-600", light: "bg-pink-50" }
+    };
+
+    const ALL_COLORS = Object.keys(COLOR_MAP);
+
+    // ============================================================
+    // 默认配置
+    // ============================================================
+    function getDefaultConfig(id, type) {
+      const base = { titleSize: 14, bodySize: 12, numberSize: 24, themeColor: "blue" };
+      if (type === "kpi") return { ...base, title: "KPI 卡片", type: "kpi", kpis: ["XPD项目", "XPD任务", "XPD系统", "流程培训场次"] };
+      if (type === "chart") return { ...base, title: "图表", type: "chart", chartType: "bar", filterCategory: "", filterNamePrefix: "", showTarget: false };
+      if (type === "combo") return { ...base, title: "组合卡片", type: "combo", items: [{ name: "XPD项目", color: "blue", label: "指标", field: "monthlyAchievement" }] };
+      if (type === "table") return { ...base, title: "数据表格", type: "table", filterCategory: "" };
+      return { ...base, title: "组件", type: "chart", chartType: "bar", filterCategory: "", filterNamePrefix: "", showTarget: false };
+    }
+
+    function getDefaultWidgetConfig(id) {
+      switch (id) {
+        case "kpi":
+          return { titleSize: 14, bodySize: 12, numberSize: 24, themeColor: "blue", title: "核心指标", type: "kpi", kpis: ["XPD项目", "XPD任务", "XPD系统", "流程培训场次"] };
+        case "norm":
+          return { titleSize: 14, bodySize: 12, numberSize: 24, themeColor: "indigo", title: "规范性指标达成", type: "chart", chartType: "bar", filterCategory: "规范性指标", filterNamePrefix: "", showTarget: true };
+        case "applicability":
+          return { titleSize: 14, bodySize: 12, numberSize: 24, themeColor: "emerald", title: "组织及文化建设", type: "chart", chartType: "bar", filterCategory: "组织及文化建设", filterNamePrefix: "", showTarget: true };
+        case "xpd":
+          return { titleSize: 14, bodySize: 12, numberSize: 24, themeColor: "cyan", title: "XPD 综合概览", type: "combo", items: [
+            { name: "XPD系统", color: "blue", label: "系统访问", field: "monthlyAchievement" },
+            { name: "XPD项目", color: "indigo", label: "项目数", field: "monthlyAchievement" },
+            { name: "XPD任务", color: "purple", label: "任务数", field: "monthlyAchievement" }
+          ]};
+        case "process":
+          return { titleSize: 14, bodySize: 12, numberSize: 24, themeColor: "amber", title: "流程综合概览", type: "combo", items: [
+            { name: "XPD流程", color: "amber", label: "流程访问", field: "monthlyAchievement" },
+            { name: "XPD流程发布（L4）", color: "orange", label: "流程发布", field: "monthlyAchievement" }
+          ]};
+        case "knowledge":
+          return { titleSize: 14, bodySize: 12, numberSize: 24, themeColor: "rose", title: "知识综合概览", type: "combo", items: [
+            { name: "浩瀚知识库", color: "rose", label: "知识库访问", field: "monthlyAchievement" },
+            { name: "XPD知识沉淀", color: "pink", label: "知识沉淀", field: "monthlyAchievement" }
+          ]};
+        case "table":
+          return { titleSize: 14, bodySize: 12, numberSize: 24, themeColor: "slate", title: "指标明细表", type: "table", filterCategory: "" };
+        default:
+          return null;
+      }
+    }
+
+    // ============================================================
+    // 布局验证
+    // ============================================================
+    function validateLayout(layout) {
+      const validNames = new Set(indicators.map(r => r.name));
+      const validCategories = new Set(indicators.map(r => r.category));
+      return layout.map(item => {
+        if (!item.config) return item;
+        const cfg = item.config;
+        if (cfg.type === "kpi" && cfg.kpis) {
+          cfg.kpis = cfg.kpis.filter(name => validNames.has(name));
+          if (cfg.kpis.length === 0) {
+            cfg.kpis = ["XPD项目", "XPD任务", "XPD系统", "流程培训场次"].filter(n => validNames.has(n));
+          }
+        }
+        if (cfg.type === "combo" && cfg.items) {
+          cfg.items = cfg.items.filter(item => validNames.has(item.name));
+          if (cfg.items.length === 0) {
+            cfg.items = [{ name: "XPD项目", color: "blue", label: "指标", field: "monthlyAchievement" }];
+          }
+        }
+        if (cfg.type === "chart" && cfg.filterCategory && !validCategories.has(cfg.filterCategory)) {
+          cfg.filterCategory = "";
+        }
+        if (cfg.type === "table" && cfg.filterCategory && !validCategories.has(cfg.filterCategory)) {
+          cfg.filterCategory = "";
+        }
+        return item;
+      });
+    }
+
+    function getLayoutHash() {
+      try {
+        const saved = localStorage.getItem("dashboard-layout-v3");
+        return saved ? JSON.parse(saved) : null;
+      } catch { return null; }
+    }
+
+    function saveLayoutToHash() {
+      const layout = getCurrentLayout();
+      try {
+        localStorage.setItem("dashboard-layout-v3", JSON.stringify(layout));
+      } catch (e) {
+        console.warn("布局保存失败:", e);
+      }
+      // 同时保存到服务器（如果可用）
+      fetch("/api/save-layout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(layout)
+      }).catch(() => {});
+    }
+
+    // ============================================================
+    // Widget 渲染
+    // ============================================================
+    function renderWidgetBody(id) {
+      const cfg = widgetConfigs[id];
+      if (!cfg) return `<div class="p-4 text-slate-400">组件未配置</div>`;
+      if (cfg.type === "kpi") return renderKPIBody(id, cfg);
+      if (cfg.type === "combo") return renderComboBody(id, cfg);
+      if (cfg.type === "chart") return renderChartBody(id, cfg);
+      if (cfg.type === "table") return renderTableBody(id, cfg);
+      return `<div class="p-4 text-slate-400">未知组件类型</div>`;
+    }
+
+    function renderKPIBody(id, cfg) {
+      const kpis = cfg.kpis || [];
+      const ns = cfg.numberSize || 24;
+      const bs = cfg.bodySize || 12;
+      return `
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 h-full items-center">
+          ${kpis.map((name, i) => {
+            const item = indicators.find(r => r.name === name) || {};
+            const color = ALL_COLORS[i % ALL_COLORS.length];
+            const c = COLOR_MAP[color];
+            return `
+              <div class="bg-gradient-to-br ${c.grad} rounded-lg p-3 text-white flex flex-col justify-center card-hover" style="font-size:${bs}px">
+                <div style="font-size:${bs}px;opacity:0.8;margin-bottom:4px">${name.replace("场次","")}</div>
+                <div style="font-size:${ns}px;font-weight:700;line-height:1.2">${item.monthlyAchievement || "--"}</div>
+                <div style="font-size:${bs}px;opacity:0.7;margin-top:2px">目标/累计：${item.total || item.monthlyTarget || "--"}</div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function renderComboBody(id, cfg) {
+      const items = cfg.items || [];
+      const ns = cfg.numberSize || 28;
+      const bs = cfg.bodySize || 12;
+      const cols = items.length <= 2 ? 2 : (items.length <= 3 ? 3 : 4);
+      return `
+        <div class="grid grid-cols-${cols} gap-3 h-full items-center">
+          ${items.map(itemCfg => {
+            const item = indicators.find(r => r.name === itemCfg.name) || {};
+            const c = COLOR_MAP[itemCfg.color || "blue"];
+            let value = "--";
+            if (itemCfg.field === "monthlyAchievement") value = item.monthlyAchievement || "--";
+            else if (itemCfg.field === "monthlyTarget") value = item.monthlyTarget || "--";
+            else if (itemCfg.field === "total") value = item.total || "--";
+            else if (itemCfg.field === "achievementRate") value = formatRate(item.rateNum);
+            return `
+              <div class="bg-gradient-to-br ${c.grad} rounded-lg p-3 text-white flex flex-col justify-center card-hover" style="font-size:${bs}px">
+                <div style="font-size:${bs}px;opacity:0.8;margin-bottom:4px">${itemCfg.label || item.name}</div>
+                <div style="font-size:${ns}px;font-weight:700;line-height:1.2">${value}</div>
+                <div style="font-size:${bs}px;opacity:0.7;margin-top:2px">${item.total ? "累计：" + item.total : (item.monthlyTarget ? "目标：" + item.monthlyTarget : "")}</div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function renderChartBody(id, cfg) {
+      const canvasId = "chart-" + id;
+      setTimeout(() => initChart(id, canvasId, cfg), 50);
+      return `<div class="h-full"><canvas id="${canvasId}"></canvas></div>`;
+    }
+
+    function initChart(widgetId, canvasId, cfg) {
+      const ctx = document.getElementById(canvasId);
+      if (!ctx) return;
+      if (charts[widgetId]) { charts[widgetId].destroy(); delete charts[widgetId]; }
+
+      let data = indicators;
+      if (cfg.filterCategory) data = data.filter(r => r.category === cfg.filterCategory);
+      if (cfg.filterNamePrefix) data = data.filter(r => r.name.startsWith(cfg.filterNamePrefix));
+      data = data.filter(r => r.achievementNum !== null);
+
+      const labels = data.map(r => cfg.filterNamePrefix ? r.name.replace(cfg.filterNamePrefix + "-", "") : r.name);
+      const datasets = [];
+
+      if (cfg.chartType === "bar" || cfg.chartType === "line") {
+        // 动态颜色：有目标值且实际达成低于目标的标记为红色，否则为蓝色
+        const achievementColors = data.map(r => {
+          if (r.targetNum !== null && r.targetNum !== 0 && r.achievementNum !== null && r.achievementNum < r.targetNum) {
+            return "#ef4444"; // 红色：未达标
+          }
+          return "#3b82f6"; // 蓝色：达标或无目标
+        });
+        datasets.push({
+          label: "月度达成", data: data.map(r => r.achievementNum),
+          backgroundColor: cfg.chartType === "line" ? "rgba(59,130,246,0.1)" : achievementColors,
+          borderColor: cfg.chartType === "line" ? "#3b82f6" : achievementColors,
+          borderWidth: 2, borderRadius: 4, barPercentage: 0.5,
+          fill: cfg.chartType === "line", tension: 0.3, type: cfg.chartType
+        });
+        if (cfg.showTarget) {
+          datasets.push({
+            label: "月度目标", data: data.map(r => r.targetNum),
+            backgroundColor: cfg.chartType === "line" ? "rgba(148,163,184,0.1)" : "#94a3b8",
+            borderColor: "#94a3b8", borderWidth: 2, borderRadius: 4, barPercentage: 0.5,
+            fill: cfg.chartType === "line", tension: 0.3, type: cfg.chartType
+          });
+        }
+      } else if (cfg.chartType === "pie" || cfg.chartType === "doughnut") {
+        datasets.push({
+          data: data.map(r => r.achievementNum),
+          backgroundColor: ["#3b82f6", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#14b8a6", "#06b6d4", "#f472b6"]
+        });
+      }
+
+      const bs = cfg.bodySize || 12;
+
+      charts[widgetId] = new Chart(ctx, {
+        type: cfg.chartType === "line" ? "line" : (cfg.chartType === "pie" || cfg.chartType === "doughnut" ? cfg.chartType : "bar"),
+        data: { labels, datasets },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: cfg.chartType === "pie" || cfg.chartType === "doughnut" || cfg.showTarget, labels: { font: { size: bs } } },
+            tooltip: { bodyFont: { size: bs }, titleFont: { size: bs }, callbacks: { label: ctx => {
+              if (cfg.chartType === "pie" || cfg.chartType === "doughnut") return ctx.label + ": " + ctx.parsed + "%";
+              return ctx.dataset.label + ": " + ctx.parsed.y + "%";
+            }}},
+            title: { display: false }
+          },
+          scales: (cfg.chartType === "pie" || cfg.chartType === "doughnut") ? {} : {
+            x: { grid: { display: false }, ticks: { font: { size: bs } } },
+            y: { grid: { color: "#f1f5f9" }, ticks: { callback: v => v + "%", font: { size: bs } } }
+          }
+        }
+      });
+    }
+
+    function renderTableBody(id, cfg) {
+      const catOptions = categories.map(c => `<option value="${c}" ${cfg.filterCategory === c ? "selected" : ""}>${c}</option>`).join("");
+      const preFilter = cfg.filterCategory || "";
+      const rows = preFilter ? indicators.filter(r => r.category === preFilter) : indicators;
+      const bs = cfg.bodySize || 12;
+
+      return `
+        <div class="flex flex-col h-full" style="font-size:${bs}px">
+          <div class="flex flex-wrap gap-2 mb-3">
+            <select id="tableFilter-${id}" onchange="filterTableBody('${id}')" class="border border-slate-200 rounded-md px-2 py-1 text-slate-600" style="font-size:${bs}px">
+              <option value="">全部分类</option>
+              ${catOptions}
+            </select>
+            <input type="text" id="tableSearch-${id}" placeholder="搜索指标..." oninput="filterTableBody('${id}')" class="border border-slate-200 rounded-md px-2 py-1 flex-1 min-w-[120px]" style="font-size:${bs}px">
+            <button onclick="exportTable()" class="px-2 py-1 border border-slate-200 rounded-md hover:bg-slate-50" style="font-size:${bs}px">导出 CSV</button>
+          </div>
+          <div class="flex-1 overflow-auto">
+            <table class="w-full text-left" style="font-size:${bs}px">
+              <thead class="text-slate-500 uppercase bg-slate-50 border-b border-slate-200">
+                <tr><th class="px-2 py-2 font-medium">分类</th><th class="px-2 py-2 font-medium">指标</th><th class="px-2 py-2 font-medium text-right">达成</th><th class="px-2 py-2 font-medium text-right">目标</th><th class="px-2 py-2 font-medium text-right">达成率</th></tr>
+              </thead>
+              <tbody id="tbody-${id}">
+                ${rows.map(row => {
+                  const rateClass = row.rateNum >= 1 ? "text-emerald-600" : row.rateNum > 0 ? "text-amber-600" : "text-slate-400";
+                  return `<tr class="table-row border-b border-slate-100"><td class="px-2 py-1.5 text-slate-600">${row.category}</td><td class="px-2 py-1.5 font-medium text-slate-800" title="${row.formula}">${row.name}</td><td class="px-2 py-1.5 text-right text-slate-700">${row.monthlyAchievement || "--"}</td><td class="px-2 py-1.5 text-right text-slate-700">${row.monthlyTarget || "--"}</td><td class="px-2 py-1.5 text-right ${rateClass} font-medium">${formatRate(row.rateNum)}</td></tr>`;
+                }).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function filterTableBody(widgetId) {
+      const keyword = document.getElementById("tableSearch-" + widgetId).value.trim().toLowerCase();
+      const cat = document.getElementById("tableFilter-" + widgetId).value;
+      const tbody = document.getElementById("tbody-" + widgetId);
+      const rows = indicators.filter(r => {
+        const matchKeyword = !keyword || r.name.toLowerCase().includes(keyword) || r.category.toLowerCase().includes(keyword);
+        const matchCat = !cat || r.category === cat;
+        return matchKeyword && matchCat;
+      });
+      tbody.innerHTML = rows.map(row => {
+        const rateClass = row.rateNum >= 1 ? "text-emerald-600" : row.rateNum > 0 ? "text-amber-600" : "text-slate-400";
+        return `<tr class="table-row border-b border-slate-100"><td class="px-2 py-1.5 text-slate-600">${row.category}</td><td class="px-2 py-1.5 font-medium text-slate-800" title="${row.formula}">${row.name}</td><td class="px-2 py-1.5 text-right text-slate-700">${row.monthlyAchievement || "--"}</td><td class="px-2 py-1.5 text-right text-slate-700">${row.monthlyTarget || "--"}</td><td class="px-2 py-1.5 text-right ${rateClass} font-medium">${formatRate(row.rateNum)}</td></tr>`;
+      }).join("");
+    }
+
+    function exportTable() {
+      const csv = [["分类", "指标名称", "月度达成", "月度目标", "达成率", "总数", "公式说明"], ...indicators.map(r => [r.category, r.name, r.monthlyAchievement, r.monthlyTarget, formatRate(r.rateNum), r.total, r.formula])].map(row => row.join(",")).join("\n");
+      const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "指标明细_" + new Date().toISOString().slice(0, 10) + ".csv";
+      link.click();
+    }
+
+    // ============================================================
+    // Widget 构建
+    // ============================================================
+    function buildWidget(item) {
+      const cfg = widgetConfigs[item.id];
+      if (!cfg) return document.createElement("div");
+      const ts = cfg.titleSize || 14;
+
+      const el = document.createElement("div");
+      el.className = "grid-stack-item";
+      el.setAttribute("gs-id", item.id);
+      el.setAttribute("gs-x", item.x);
+      el.setAttribute("gs-y", item.y);
+      el.setAttribute("gs-w", item.w);
+      el.setAttribute("gs-h", item.h);
+      el.setAttribute("gs-min-w", 3);
+      el.setAttribute("gs-min-h", 2);
+
+      const content = document.createElement("div");
+      content.className = "grid-stack-item-content";
+      content.innerHTML = `
+        <div class="widget-header flex justify-between items-center px-4 py-2.5 border-b border-slate-100 select-none" style="background:${COLOR_MAP[cfg.themeColor]?.light || '#f8fafc'}">
+          <h3 class="font-semibold text-slate-800" id="title-${item.id}" style="font-size:${ts}px" ${isEditMode ? 'contenteditable="true"' : ''}>${cfg.title}</h3>
+          <div class="widget-actions flex items-center gap-1">
+            <button onclick="openConfig('${item.id}')" class="p-1 text-slate-400 hover:text-blue-600 rounded" title="配置"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></button>
+            <button onclick="toggleWidget('${item.id}')" class="p-1 text-slate-400 hover:text-slate-600 rounded" title="收起/展开"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
+            <button onclick="removeWidget('${item.id}')" class="p-1 text-slate-400 hover:text-red-500 rounded" title="移除"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+          </div>
+        </div>
+        <div id="body-${item.id}" class="flex-1 overflow-auto p-4">${renderWidgetBody(item.id)}</div>
+      `;
+
+      const titleEl = content.querySelector(`#title-${item.id}`);
+      if (titleEl) {
+        titleEl.addEventListener("blur", () => { cfg.title = titleEl.textContent.trim(); saveLayoutToHash(); });
+        titleEl.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); titleEl.blur(); } });
+      }
+
+      el.appendChild(content);
+      return el;
+    }
+
+    function refreshWidget(id) {
+      const body = document.getElementById("body-" + id);
+      const header = document.querySelector(`#title-${id}`)?.closest(".widget-header");
+      if (!body) return;
+      const cfg = widgetConfigs[id];
+      if (!cfg) return;
+      body.innerHTML = renderWidgetBody(id);
+      const ts = cfg.titleSize || 14;
+      const titleEl = document.getElementById("title-" + id);
+      if (titleEl) titleEl.style.fontSize = ts + "px";
+      if (header) header.style.background = (COLOR_MAP[cfg.themeColor]?.light || '#f8fafc');
+      if (cfg.type === "chart") setTimeout(() => initChart(id, "chart-" + id, cfg), 50);
+    }
+
+    // ============================================================
+    // 添加组件
+    // ============================================================
+    function openAddType() {
+      document.getElementById("addTypeOverlay").classList.add("active");
+    }
+
+    function closeAddType(e) {
+      if (e && e.target !== document.getElementById("addTypeOverlay")) return;
+      document.getElementById("addTypeOverlay").classList.remove("active");
+      pendingWidgetType = null;
+    }
+
+    window.selectType = function(type) {
+      pendingWidgetType = type;
+      closeAddType();
+      addNewWidget(type);
+    };
+
+    function addNewWidget(type) {
+      const newId = "widget-" + (++widgetIdCounter);
+      widgetConfigs[newId] = getDefaultConfig(newId, type);
+
+      const maxH = Math.max(...grid.getGridItems().map(el => {
+        const y = parseInt(el.getAttribute("gs-y")) || 0;
+        const h = parseInt(el.getAttribute("gs-h")) || 1;
+        return y + h;
+      }), 20);
+
+      const item = { id: newId, x: 0, y: maxH, w: 6, h: type === "table" ? 7 : (type === "kpi" ? 2 : 5) };
+      const el = buildWidget(item);
+      grid.addWidget(el);
+      saveLayoutToHash();
+      setTimeout(() => openConfig(newId), 100);
+    }
+
+    // ============================================================
+    // 配置面板
+    // ============================================================
+    function colorSwatches(selected) {
+      return `<div class="flex flex-wrap gap-2">${ALL_COLORS.map(c =>
+        `<div class="color-swatch ${c === selected ? 'active' : ''} bg-${c}-500" data-color="${c}" onclick="selectColor(this)"></div>`
+      ).join("")}</div>`;
+    }
+
+    window.selectColor = function(el) {
+      el.parentElement.querySelectorAll(".color-swatch").forEach(s => s.classList.remove("active"));
+      el.classList.add("active");
+    };
+
+    function openConfig(widgetId) {
+      activeConfigWidget = widgetId;
+      const cfg = widgetConfigs[widgetId];
+      if (!cfg) return;
+      const form = document.getElementById("configForm");
+      const catOptions = categories.map(c => `<option value="${c}" ${cfg.filterCategory === c ? "selected" : ""}>${c}</option>`).join("");
+      const allNames = [...new Set(indicators.map(r => r.name))];
+      const nameOptions = allNames.map(n => `<option value="${n}" ${cfg.kpis && cfg.kpis.includes(n) ? "selected" : ""}>${n}</option>`).join("");
+      const fieldOptions = [
+        { v: "monthlyAchievement", l: "月度达成" },
+        { v: "monthlyTarget", l: "月度目标" },
+        { v: "total", l: "总数" },
+        { v: "achievementRate", l: "达成率" }
+      ];
+
+      let html = `
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">组件标题</label>
+          <input type="text" id="cfg-title" value="${cfg.title}" class="w-full text-sm border border-slate-200 rounded-md px-3 py-2">
+        </div>
+        <div class="config-section">
+          <div class="config-section-title">外观样式</div>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">主题颜色</label>
+              ${colorSwatches(cfg.themeColor || "blue")}
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">标题大小 (px)</label>
+                <input type="number" id="cfg-titleSize" value="${cfg.titleSize || 14}" min="10" max="32" class="w-full text-sm border border-slate-200 rounded-md px-2 py-1.5">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">正文大小 (px)</label>
+                <input type="number" id="cfg-bodySize" value="${cfg.bodySize || 12}" min="10" max="24" class="w-full text-sm border border-slate-200 rounded-md px-2 py-1.5">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">数字大小 (px)</label>
+                <input type="number" id="cfg-numberSize" value="${cfg.numberSize || 24}" min="12" max="48" class="w-full text-sm border border-slate-200 rounded-md px-2 py-1.5">
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      if (cfg.type === "kpi") {
+        html += `
+          <div class="config-section">
+            <div class="config-section-title">数据源</div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">显示的 KPI 指标（最多4个）</label>
+              <select id="cfg-kpis" multiple size="6" class="w-full text-sm border border-slate-200 rounded-md px-3 py-2">${nameOptions}</select>
+              <p class="text-xs text-slate-400 mt-1">按住 Ctrl 键可多选</p>
+            </div>
+          </div>
+        `;
+      }
+
+      if (cfg.type === "combo") {
+        html += `
+          <div class="config-section">
+            <div class="config-section-title">组合指标配置</div>
+            <div id="comboItems" class="space-y-3">
+              ${(cfg.items || []).map((it, idx) => `
+                <div class="border border-slate-200 rounded-md p-3 bg-slate-50">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium text-slate-700">指标 ${idx + 1}</span>
+                    ${cfg.items.length > 1 ? `<button onclick="removeComboItem(${idx})" class="text-xs text-red-500 hover:text-red-700">删除</button>` : ''}
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <select id="cfg-item-name-${idx}" class="text-xs border border-slate-200 rounded-md px-2 py-1">${allNames.map(n => `<option value="${n}" ${it.name === n ? "selected" : ""}>${n}</option>`).join("")}</select>
+                    <input type="text" id="cfg-item-label-${idx}" value="${it.label || ''}" placeholder="显示标签" class="text-xs border border-slate-200 rounded-md px-2 py-1">
+                    <select id="cfg-item-field-${idx}" class="text-xs border border-slate-200 rounded-md px-2 py-1">${fieldOptions.map(f => `<option value="${f.v}" ${it.field === f.v ? "selected" : ""}>${f.l}</option>`).join("")}</select>
+                    <select id="cfg-item-color-${idx}" class="text-xs border border-slate-200 rounded-md px-2 py-1">${ALL_COLORS.map(c => `<option value="${c}" ${it.color === c ? "selected" : ""}>${c}</option>`).join("")}</select>
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+            <button onclick="addComboItem()" class="mt-2 text-sm text-blue-600 hover:text-blue-800 font-medium">+ 添加指标</button>
+          </div>
+        `;
+      }
+
+      if (cfg.type === "chart") {
+        html += `
+          <div class="config-section">
+            <div class="config-section-title">数据源</div>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">图表类型</label>
+                <select id="cfg-chartType" class="w-full text-sm border border-slate-200 rounded-md px-3 py-2">
+                  <option value="bar" ${cfg.chartType === "bar" ? "selected" : ""}>柱状图</option>
+                  <option value="line" ${cfg.chartType === "line" ? "selected" : ""}>折线图</option>
+                  <option value="pie" ${cfg.chartType === "pie" ? "selected" : ""}>饼图</option>
+                  <option value="doughnut" ${cfg.chartType === "doughnut" ? "selected" : ""}>环形图</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">数据分类筛选</label>
+                <select id="cfg-filterCategory" class="w-full text-sm border border-slate-200 rounded-md px-3 py-2">
+                  <option value="" ${!cfg.filterCategory ? "selected" : ""}>不筛选（全部）</option>
+                  ${catOptions}
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">指标名称前缀过滤</label>
+                <input type="text" id="cfg-filterNamePrefix" value="${cfg.filterNamePrefix || ""}" placeholder="例如：交付规范性" class="w-full text-sm border border-slate-200 rounded-md px-3 py-2">
+              </div>
+              <div class="flex items-center gap-2">
+                <input type="checkbox" id="cfg-showTarget" ${cfg.showTarget ? "checked" : ""} class="rounded border-slate-300">
+                <label for="cfg-showTarget" class="text-sm text-slate-700">显示目标值对比</label>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (cfg.type === "table") {
+        html += `
+          <div class="config-section">
+            <div class="config-section-title">数据源</div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">默认分类筛选</label>
+              <select id="cfg-filterCategory" class="w-full text-sm border border-slate-200 rounded-md px-3 py-2">
+                <option value="" ${!cfg.filterCategory ? "selected" : ""}>不筛选（全部）</option>
+                ${catOptions}
+              </select>
+            </div>
+          </div>
+        `;
+      }
+
+      form.innerHTML = html;
+      document.getElementById("configOverlay").classList.add("active");
+    }
+
+    function closeConfig(e) {
+      if (e && e.target !== document.getElementById("configOverlay")) return;
+      document.getElementById("configOverlay").classList.remove("active");
+      activeConfigWidget = null;
+    }
+
+    window.removeComboItem = function(idx) {
+      const cfg = widgetConfigs[activeConfigWidget];
+      cfg.items.splice(idx, 1);
+      openConfig(activeConfigWidget);
+    };
+
+    window.addComboItem = function() {
+      const cfg = widgetConfigs[activeConfigWidget];
+      if (!cfg.items) cfg.items = [];
+      const allNames = [...new Set(indicators.map(r => r.name))];
+      cfg.items.push({ name: allNames[0] || "", label: "", field: "monthlyAchievement", color: "blue" });
+      openConfig(activeConfigWidget);
+    };
+
+    function saveConfig() {
+      if (!activeConfigWidget) return;
+      const cfg = widgetConfigs[activeConfigWidget];
+      cfg.title = document.getElementById("cfg-title").value.trim();
+      cfg.titleSize = parseInt(document.getElementById("cfg-titleSize").value) || 14;
+      cfg.bodySize = parseInt(document.getElementById("cfg-bodySize").value) || 12;
+      cfg.numberSize = parseInt(document.getElementById("cfg-numberSize").value) || 24;
+
+      const activeSwatch = document.querySelector(".color-swatch.active");
+      if (activeSwatch) cfg.themeColor = activeSwatch.getAttribute("data-color");
+
+      if (cfg.type === "kpi") {
+        const sel = document.getElementById("cfg-kpis");
+        cfg.kpis = Array.from(sel.selectedOptions).map(o => o.value).slice(0, 4);
+      }
+
+      if (cfg.type === "combo") {
+        const container = document.getElementById("comboItems");
+        const count = container.children.length;
+        cfg.items = [];
+        for (let i = 0; i < count; i++) {
+          cfg.items.push({
+            name: document.getElementById(`cfg-item-name-${i}`).value,
+            label: document.getElementById(`cfg-item-label-${i}`).value,
+            field: document.getElementById(`cfg-item-field-${i}`).value,
+            color: document.getElementById(`cfg-item-color-${i}`).value
+          });
+        }
+      }
+
+      if (cfg.type === "chart") {
+        cfg.chartType = document.getElementById("cfg-chartType").value;
+        cfg.filterCategory = document.getElementById("cfg-filterCategory").value;
+        cfg.filterNamePrefix = document.getElementById("cfg-filterNamePrefix").value.trim();
+        cfg.showTarget = document.getElementById("cfg-showTarget").checked;
+      }
+
+      if (cfg.type === "table") {
+        cfg.filterCategory = document.getElementById("cfg-filterCategory").value;
+      }
+
+      const titleEl = document.getElementById("title-" + activeConfigWidget);
+      if (titleEl) { titleEl.textContent = cfg.title; titleEl.style.fontSize = (cfg.titleSize || 14) + "px"; }
+      const header = titleEl?.closest(".widget-header");
+      if (header) header.style.background = (COLOR_MAP[cfg.themeColor]?.light || '#f8fafc');
+
+      refreshWidget(activeConfigWidget);
+      saveLayoutToHash();
+      closeConfig();
+    }
+
+    // ============================================================
+    // Gridstack 与布局管理
+    // ============================================================
+    const defaultLayout = [
+      { id: "kpi", x: 0, y: 0, w: 12, h: 2 },
+      { id: "norm", x: 0, y: 2, w: 6, h: 5 },
+      { id: "applicability", x: 6, y: 2, w: 6, h: 5 },
+      { id: "xpd", x: 0, y: 7, w: 6, h: 4 },
+      { id: "process", x: 6, y: 7, w: 6, h: 4 },
+      { id: "knowledge", x: 0, y: 11, w: 6, h: 4 },
+      { id: "table", x: 0, y: 15, w: 12, h: 7 }
+    ];
+
+    function initGrid(layout) {
+      // 如果已有 grid 实例，先销毁
+      if (grid) {
+        grid.destroy(true);
+        grid = null;
+      }
+
+      const container = document.querySelector(".grid-stack");
+      container.innerHTML = "";
+      widgetConfigs = {};
+      charts = {};
+      widgetIdCounter = 0;
+
+      layout.forEach(item => {
+        if (item.id.startsWith("widget-")) {
+          const num = parseInt(item.id.replace("widget-", ""));
+          if (num > widgetIdCounter) widgetIdCounter = num;
+        }
+      });
+
+      grid = GridStack.init({
+        column: 12, cellHeight: "60px", margin: "8px", animate: true,
+        draggable: { handle: ".widget-header" }, resizable: { handles: "se" },
+        float: true, disableDrag: !isEditMode, disableResize: !isEditMode, removable: false
+      });
+
+      layout.forEach(item => {
+        if (!item.config) {
+          // Try to get preset config by ID first, then fallback to type-based default
+          item.config = getDefaultWidgetConfig(item.id) || getDefaultConfig(item.id, "chart");
+        }
+        widgetConfigs[item.id] = item.config;
+        const el = buildWidget(item);
+        grid.addWidget(el);
+        if (item.config.type === "chart") setTimeout(() => initChart(item.id, "chart-" + item.id, item.config), 100);
+      });
+
+      if (isEditMode) { grid.enable(); document.querySelectorAll("[id^='title-']").forEach(el => el.contentEditable = true); }
+      else grid.disable();
+    }
+
+    function toggleEditMode() {
+      isEditMode = !isEditMode;
+      const btn = document.getElementById("editToggle");
+      const banner = document.getElementById("editBanner");
+      document.body.classList.toggle("edit-mode", isEditMode);
+      document.querySelectorAll("[id^='title-']").forEach(el => { el.contentEditable = isEditMode; });
+      if (isEditMode) {
+        btn.textContent = "退出编辑"; btn.classList.replace("bg-slate-100", "bg-blue-100"); btn.classList.replace("text-slate-700", "text-blue-700");
+        banner.classList.remove("hidden"); grid.enable();
+      } else {
+        btn.textContent = "编辑布局"; btn.classList.replace("bg-blue-100", "bg-slate-100"); btn.classList.replace("text-blue-700", "text-slate-700");
+        banner.classList.add("hidden"); grid.disable(); saveLayoutToHash();
+      }
+    }
+
+    function toggleWidget(id) {
+      const body = document.getElementById('body-' + id);
+      if (body) body.style.display = body.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function removeWidget(id) {
+      const items = grid.getGridItems();
+      const item = items.find(el => el.getAttribute('gs-id') === id);
+      if (item) { grid.removeWidget(item); delete widgetConfigs[id]; saveLayoutToHash(); }
+    }
+
+    function getCurrentLayout() {
+      return grid.save(false).map(node => ({
+        id: node.id, x: node.x, y: node.y, w: node.w, h: node.h,
+        config: widgetConfigs[node.id] || null
+      }));
+    }
+
+    function exportLayout() {
+      const layout = getCurrentLayout();
+      const blob = new Blob([JSON.stringify(layout, null, 2)], { type: "application/json" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "dashboard-layout_" + new Date().toISOString().slice(0, 10) + ".json";
+      link.click();
+    }
+
+    function importLayout(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const saved = JSON.parse(e.target.result);
+          if (!Array.isArray(saved)) throw new Error("Invalid layout format");
+          saved.forEach(item => { if (item.config) widgetConfigs[item.id] = item.config; });
+          const newLayout = saved.map(item => ({ id: item.id, x: item.x, y: item.y, w: item.w, h: item.h, config: item.config || null }));
+          initGrid(newLayout);
+          saveLayoutToHash();
+        } catch (err) { alert("布局文件解析失败：" + err.message); }
+      };
+      reader.readAsText(file);
+      input.value = "";
+    }
+
+    function resetLayout() {
+      if (confirm("确定要恢复默认布局吗？当前自定义布局和配置将丢失。")) {
+        widgetConfigs = {};
+        initGrid(defaultLayout);
+        saveLayoutToHash();
+      }
+    }
+
+    function refreshData() {
+      const btn = document.querySelector("button[onclick='refreshData()']");
+      const originalText = btn.textContent;
+      btn.textContent = "同步中...";
+      btn.disabled = true;
+
+      // 检测是否通过 file:// 协议打开
+      const isFileProtocol = window.location.protocol === "file:";
+
+      // 先尝试本地服务器同步接口（如果运行了 server.js）
+      fetch("http://localhost:3000/api/sync", {
+        method: "POST",
+        mode: "cors",
+      })
+        .then(res => res.ok ? res.json() : Promise.reject())
+        .then(() => {
+          // 同步成功，重新加载 data.json
+          return loadDataJson(true);
+        })
+        .catch(() => {
+          // 本地服务器未运行，尝试重新加载 data.json
+          if (isFileProtocol) {
+            // file:// 协议下 fetch 会被浏览器阻止，尝试 XMLHttpRequest
+            return loadDataJsonXHR();
+          }
+          return loadDataJson(true);
+        })
+        .then(() => {
+          // 刷新所有组件数据，不重置布局
+          Object.keys(widgetConfigs).forEach(id => {
+            refreshWidget(id);
+            if (widgetConfigs[id].type === "chart") {
+              setTimeout(() => initChart(id, "chart-" + id, widgetConfigs[id]), 50);
+            }
+          });
+          document.getElementById("lastUpdated").textContent = "数据更新：" + new Date().toLocaleString("zh-CN");
+        })
+        .catch(err => {
+          console.warn("刷新失败:", err);
+          // file:// 协议下静默失败，至少重新渲染当前内存数据
+          if (isFileProtocol) {
+            Object.keys(widgetConfigs).forEach(id => {
+              refreshWidget(id);
+              if (widgetConfigs[id].type === "chart") {
+                setTimeout(() => initChart(id, "chart-" + id, widgetConfigs[id]), 50);
+              }
+            });
+            document.getElementById("lastUpdated").textContent = "数据已刷新（本地模式）：" + new Date().toLocaleString("zh-CN");
+          } else {
+            alert("数据刷新失败，请检查 data.json 是否存在");
+          }
+        })
+        .finally(() => {
+          btn.textContent = originalText;
+          btn.disabled = false;
+        });
+    }
+
+    // 使用 XMLHttpRequest 加载 data.json（兼容 file:// 协议）
+    function loadDataJsonXHR() {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        const url = "data.json?_t=" + Date.now();
+        xhr.open("GET", url, true);
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === 4) {
+            if (xhr.status === 200 || xhr.status === 0) {
+              try {
+                const json = JSON.parse(xhr.responseText);
+                if (json.records && Array.isArray(json.records)) {
+                  rawRecords = json.records;
+                  processData(rawRecords);
+                  resolve();
+                } else {
+                  reject(new Error("数据格式错误"));
+                }
+              } catch (e) {
+                reject(new Error("JSON解析失败"));
+              }
+            } else {
+              reject(new Error("加载失败，状态码：" + xhr.status));
+            }
+          }
+        };
+        xhr.onerror = () => reject(new Error("网络请求失败"));
+        xhr.send();
+      });
+    }
+
+    // 加载 data.json 的通用函数（fetch 方式）
+    function loadDataJson(isRefresh) {
+      return new Promise((resolve, reject) => {
+        const url = "data.json?_t=" + Date.now();
+        fetch(url)
+          .then(res => res.ok ? res.json() : Promise.reject(new Error("加载失败")))
+          .then(json => {
+            if (json.records && Array.isArray(json.records)) {
+              rawRecords = json.records;
+              processData(rawRecords);
+              resolve();
+            } else {
+              reject(new Error("数据格式错误"));
+            }
+          })
+          .catch(reject);
+      });
+    }
+
+    // ============================================================
+    // 外部数据加载
+    // ============================================================
+    let isDataLoaded = false;
+
+    function loadExternalData(isRefresh) {
+      // 防止重复初始化
+      if (!isRefresh && isDataLoaded) {
+        console.log("数据已加载，跳过重复初始化");
+        return;
+      }
+      const isFileProtocol = window.location.protocol === "file:";
+
+      function handleData(json) {
+        if (json.records && Array.isArray(json.records)) {
+          rawRecords = json.records;
+          processData(rawRecords);
+          isDataLoaded = true;
+
+          if (isRefresh) {
+            // 刷新模式：保留现有布局，只更新数据
+            Object.keys(widgetConfigs).forEach(id => {
+              refreshWidget(id);
+              if (widgetConfigs[id].type === "chart") {
+                setTimeout(() => initChart(id, "chart-" + id, widgetConfigs[id]), 50);
+              }
+            });
+          } else {
+            // 初次加载：优先从服务器恢复布局，失败则回退 localStorage
+            if (window.location.search.includes("reset-layout=true")) {
+              localStorage.removeItem("dashboard-layout-v3");
+              fetch("/api/save-layout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(defaultLayout)
+              }).catch(() => {});
+              initGrid(defaultLayout);
+            } else {
+              fetch("/api/load-layout")
+                .then(res => res.ok ? res.json() : Promise.reject())
+                .then(layout => {
+                  console.log("从服务器恢复布局:", layout.length, "个组件");
+                  const validLayout = validateLayout(layout);
+                  initGrid(validLayout);
+                  localStorage.setItem("dashboard-layout-v3", JSON.stringify(validLayout));
+                })
+                .catch(() => {
+                  const savedLayout = getLayoutHash();
+                  if (savedLayout && Array.isArray(savedLayout) && savedLayout.length > 0) {
+                    console.log("从 localStorage 恢复布局:", savedLayout.length, "个组件");
+                    initGrid(validateLayout(savedLayout));
+                  } else {
+                    console.log("使用默认布局");
+                    initGrid(defaultLayout);
+                  }
+                });
+            }
+          }
+          document.getElementById("lastUpdated").textContent = "数据更新：" + new Date().toLocaleString("zh-CN");
+        }
+      }
+
+
+      function fallbackInit() {
+        if (!isRefresh) {
+          isDataLoaded = true;
+          fetch("/api/load-layout")
+            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(layout => {
+              initGrid(validateLayout(layout));
+              localStorage.setItem("dashboard-layout-v3", JSON.stringify(layout));
+            })
+            .catch(() => {
+              const savedLayout = getLayoutHash();
+              if (savedLayout && Array.isArray(savedLayout)) {
+                initGrid(validateLayout(savedLayout));
+              } else {
+                initGrid(defaultLayout);
+              }
+            });
+        }
+      }
+
+      // file:// 协议下使用 XMLHttpRequest
+      if (isFileProtocol) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "data.json?_t=" + Date.now(), true);
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === 4) {
+            if (xhr.status === 200 || xhr.status === 0) {
+              try {
+                const json = JSON.parse(xhr.responseText);
+                handleData(json);
+              } catch (e) {
+                console.warn("data.json 解析失败:", e);
+                fallbackInit();
+              }
+            } else {
+              console.warn("data.json 加载失败，状态码：", xhr.status);
+              fallbackInit();
+            }
+          }
+        };
+        xhr.onerror = function() {
+          console.warn("data.json 请求失败");
+          fallbackInit();
+        };
+        xhr.send();
+        return;
+      }
+
+      // http/https 协议下使用 fetch
+      fetch("data.json?_t=" + Date.now())
+        .then(res => res.ok ? res.json() : Promise.reject())
+        .then(json => handleData(json))
+        .catch((err) => {
+          console.warn("加载 data.json 失败:", err);
+          fallbackInit();
+        });
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+      // 先用内存数据初始化布局，确保页面立即显示
+      processData(rawRecords);
+      const savedLayout = getLayoutHash();
+      if (savedLayout && Array.isArray(savedLayout) && savedLayout.length > 0) {
+        initGrid(validateLayout(savedLayout));
+      } else {
+        initGrid(defaultLayout);
+      }
+
+      // 然后尝试加载最新的 data.json
+      loadExternalData(true);
+
+      const now = new Date().toLocaleString("zh-CN");
+      document.getElementById("lastUpdated").textContent = "数据更新：" + now;
+      document.getElementById("generatedAt").textContent = now;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "title": "XPD指标概览",
+  "source": "https://xiaopeng.feishu.cn/wiki/YVCSwf2mViezJwkXPN8c5LB7nVe",
+  "baseToken": "Sudzb3xqza2Qnps1MGVcERUFnPh",
+  "tableId": "tblP63xW1o6CwvpA",
+  "updatedAt": "2026-05-20T08:52:55Z",
+  "records": [
+    {"category": "规范性指标", "monthlyAchievement": "96.1%", "monthlyTarget": "95%", "name": "交付规范性-G类", "formula": "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)", "total": "NA", "achievementRate": 1.011578947},
+    {"category": "规范性指标", "monthlyAchievement": "91.7%", "monthlyTarget": "90%", "name": "交付规范性-K类", "formula": "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)", "total": "NA", "achievementRate": 1.018888889},
+    {"category": "规范性指标", "monthlyAchievement": "92.5%", "monthlyTarget": "90%", "name": "交付规范性-P类", "formula": "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)", "total": "NA", "achievementRate": 1.027777778},
+    {"category": "规范性指标", "monthlyAchievement": "85%", "monthlyTarget": "85%", "name": "流程适用性-G类", "formula": "=1-不适用/(总数-进行中)", "total": "NA", "achievementRate": 1.0},
+    {"category": "规范性指标", "monthlyAchievement": "70%", "monthlyTarget": "75%", "name": "流程适用性-K类", "formula": "=1-不适用/(总数-进行中)", "total": "NA", "achievementRate": 0.933333333},
+    {"category": "规范性指标", "monthlyAchievement": "50", "monthlyTarget": "70", "name": "AI检核交付质量-G类", "formula": "=AVERAGE(AI1,AI2,...AIn)", "total": "NA", "achievementRate": 0.714285714},
+    {"category": "规范性指标", "monthlyAchievement": "50", "monthlyTarget": "70", "name": "AI检核交付质量-K类", "formula": "=AVERAGE(AI1,AI2,...AIn)", "total": "NA", "achievementRate": 0.714285714},
+    {"category": "组织及文化建设", "monthlyAchievement": "4", "monthlyTarget": "4", "name": "流程培训场次", "formula": "含火炬计划、千将计划、中心培训等。", "total": "8", "achievementRate": 1},
+    {"category": "组织及文化建设", "monthlyAchievement": "9.0", "monthlyTarget": "8.4", "name": "流程满意度", "formula": "每半年度一次调研", "total": "NA", "achievementRate": 1.071428571},
+    {"category": "基础信息", "monthlyAchievement": "25", "monthlyTarget": "NA", "name": "XPD项目", "formula": "本月监控/年度累计", "total": "50", "achievementRate": null},
+    {"category": "基础信息", "monthlyAchievement": "3000", "monthlyTarget": "NA", "name": "XPD任务", "formula": "本月监控/年度累计", "total": "1.2W", "achievementRate": null},
+    {"category": "系统访问量", "monthlyAchievement": "20W", "monthlyTarget": "NA", "name": "XPD系统", "formula": "本月/年度累计", "total": "80W", "achievementRate": null},
+    {"category": "系统访问量", "monthlyAchievement": "3000", "monthlyTarget": "NA", "name": "XPD流程", "formula": "本月/年度累计", "total": "1W", "achievementRate": null},
+    {"category": "系统访问量", "monthlyAchievement": "3000", "monthlyTarget": "NA", "name": "浩瀚知识库", "formula": "本月/年度累计", "total": "1W", "achievementRate": null},
+    {"category": "基础信息", "monthlyAchievement": "39", "monthlyTarget": "NA", "name": "XPD流程发布（L4）", "formula": "本月发布/流程总数", "total": "312", "achievementRate": null},
+    {"category": "基础信息", "monthlyAchievement": "200", "monthlyTarget": "NA", "name": "XPD知识沉淀", "formula": "本月新增/文档总数", "total": "1.3W", "achievementRate": null},
+    {"category": "组织及文化建设", "monthlyAchievement": "1", "monthlyTarget": "1", "name": "流程委员会运营", "formula": "PTC每半年度一次、XPD-PTC 每季度一次", "total": "2", "achievementRate": 1},
+    {"category": "组织及文化建设", "monthlyAchievement": "90%", "monthlyTarget": "85%", "name": "流程问题管理", "formula": "=1-延期未完成/问题总数", "total": "NA", "achievementRate": 1.058823529}
+  ]
+}
