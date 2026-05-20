@@ -1208,14 +1208,25 @@
         });
     }
     document.addEventListener("DOMContentLoaded", function() {
-      // 先用内存数据初始化布局，确保页面立即显示
+      // 先用内存数据初始化布局
       processData(rawRecords);
-      const savedLayout = getLayoutHash();
-      if (savedLayout && Array.isArray(savedLayout) && savedLayout.length > 0) {
-        initGrid(validateLayout(savedLayout));
-      } else {
-        initGrid(defaultLayout);
-      }
+
+      // 尝试从 layout.json 加载布局（适用于 GitHub Pages 等静态托管）
+      fetch("layout.json?_t=" + Date.now())
+        .then(res => res.ok ? res.json() : Promise.reject())
+        .then(layout => {
+          console.log("从 layout.json 初始化布局:", layout.length, "个组件");
+          initGrid(validateLayout(layout));
+        })
+        .catch(() => {
+          // layout.json 加载失败，尝试 localStorage 或默认布局
+          const savedLayout = getLayoutHash();
+          if (savedLayout && Array.isArray(savedLayout) && savedLayout.length > 0) {
+            initGrid(validateLayout(savedLayout));
+          } else {
+            initGrid(defaultLayout);
+          }
+        });
 
       // 然后尝试加载最新的 data.json
       loadExternalData(true);
