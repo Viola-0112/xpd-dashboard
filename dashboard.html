@@ -1114,14 +1114,25 @@
                   localStorage.setItem("dashboard-layout-v3", JSON.stringify(validLayout));
                 })
                 .catch(() => {
-                  const savedLayout = getLayoutHash();
-                  if (savedLayout && Array.isArray(savedLayout) && savedLayout.length > 0) {
-                    console.log("从 localStorage 恢复布局:", savedLayout.length, "个组件");
-                    initGrid(validateLayout(savedLayout));
-                  } else {
-                    console.log("使用默认布局");
-                    initGrid(defaultLayout);
-                  }
+                  // API 失败，尝试从静态 layout.json 加载（适用于 GitHub Pages 等静态托管）
+                  fetch("layout.json?_t=" + Date.now())
+                    .then(res => res.ok ? res.json() : Promise.reject())
+                    .then(layout => {
+                      console.log("从 layout.json 恢复布局:", layout.length, "个组件");
+                      const validLayout = validateLayout(layout);
+                      initGrid(validLayout);
+                      localStorage.setItem("dashboard-layout-v3", JSON.stringify(validLayout));
+                    })
+                    .catch(() => {
+                      const savedLayout = getLayoutHash();
+                      if (savedLayout && Array.isArray(savedLayout) && savedLayout.length > 0) {
+                        console.log("从 localStorage 恢复布局:", savedLayout.length, "个组件");
+                        initGrid(validateLayout(savedLayout));
+                      } else {
+                        console.log("使用默认布局");
+                        initGrid(defaultLayout);
+                      }
+                    });
                 });
             }
           }
@@ -1140,12 +1151,21 @@
               localStorage.setItem("dashboard-layout-v3", JSON.stringify(layout));
             })
             .catch(() => {
-              const savedLayout = getLayoutHash();
-              if (savedLayout && Array.isArray(savedLayout)) {
-                initGrid(validateLayout(savedLayout));
-              } else {
-                initGrid(defaultLayout);
-              }
+              // API 失败，尝试从静态 layout.json 加载
+              fetch("layout.json?_t=" + Date.now())
+                .then(res => res.ok ? res.json() : Promise.reject())
+                .then(layout => {
+                  initGrid(validateLayout(layout));
+                  localStorage.setItem("dashboard-layout-v3", JSON.stringify(layout));
+                })
+                .catch(() => {
+                  const savedLayout = getLayoutHash();
+                  if (savedLayout && Array.isArray(savedLayout)) {
+                    initGrid(validateLayout(savedLayout));
+                  } else {
+                    initGrid(defaultLayout);
+                  }
+                });
             });
         }
       }
