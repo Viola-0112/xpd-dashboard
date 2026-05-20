@@ -383,10 +383,13 @@
             else if (itemCfg.field === "monthlyTarget") value = item.monthlyTarget || "--";
             else if (itemCfg.field === "total") value = item.total || "--";
             else if (itemCfg.field === "achievementRate") value = formatRate(item.rateNum);
+            // 未达标标红：有目标值且实际达成低于目标
+            const isBelowTarget = item.targetNum !== null && item.targetNum !== 0 && item.achievementNum !== null && item.achievementNum < item.targetNum;
+            const valueColor = isBelowTarget ? "color:#ef4444 !important;" : "";
             return `
               <div class="bg-gradient-to-br ${c.grad} rounded-lg p-3 text-white flex flex-col justify-center card-hover" style="font-size:${bs}px">
                 <div style="font-size:${bs}px;opacity:0.8;margin-bottom:4px">${itemCfg.label || item.name}</div>
-                <div style="font-size:${ns}px;font-weight:700;line-height:1.2">${value}</div>
+                <div style="font-size:${ns}px;font-weight:700;line-height:1.2;${valueColor}">${value}</div>
                 <div style="font-size:${bs}px;opacity:0.7;margin-top:2px">${item.total ? "累计：" + item.total : (item.monthlyTarget ? "目标：" + item.monthlyTarget : "")}</div>
               </div>
             `;
@@ -491,7 +494,9 @@
               <tbody id="tbody-${id}">
                 ${rows.map(row => {
                   const rateClass = row.rateNum >= 1 ? "text-emerald-600" : row.rateNum > 0 ? "text-amber-600" : "text-slate-400";
-                  return `<tr class="table-row border-b border-slate-100"><td class="px-2 py-1.5 text-slate-600">${row.category}</td><td class="px-2 py-1.5 font-medium text-slate-800" title="${row.formula}">${row.name}</td><td class="px-2 py-1.5 text-right text-slate-700">${row.monthlyAchievement || "--"}</td><td class="px-2 py-1.5 text-right text-slate-700">${row.monthlyTarget || "--"}</td><td class="px-2 py-1.5 text-right ${rateClass} font-medium">${formatRate(row.rateNum)}</td></tr>`;
+                  const isBelowTarget = row.targetNum !== null && row.targetNum !== 0 && row.achievementNum !== null && row.achievementNum < row.targetNum;
+                  const achClass = isBelowTarget ? "text-red-500" : "text-slate-700";
+                  return `<tr class="table-row border-b border-slate-100"><td class="px-2 py-1.5 text-slate-600">${row.category}</td><td class="px-2 py-1.5 font-medium text-slate-800" title="${row.formula}">${row.name}</td><td class="px-2 py-1.5 text-right ${achClass} font-medium">${row.monthlyAchievement || "--"}</td><td class="px-2 py-1.5 text-right text-slate-700">${row.monthlyTarget || "--"}</td><td class="px-2 py-1.5 text-right ${rateClass} font-medium">${formatRate(row.rateNum)}</td></tr>`;
                 }).join("")}
               </tbody>
             </table>
@@ -511,7 +516,9 @@
       });
       tbody.innerHTML = rows.map(row => {
         const rateClass = row.rateNum >= 1 ? "text-emerald-600" : row.rateNum > 0 ? "text-amber-600" : "text-slate-400";
-        return `<tr class="table-row border-b border-slate-100"><td class="px-2 py-1.5 text-slate-600">${row.category}</td><td class="px-2 py-1.5 font-medium text-slate-800" title="${row.formula}">${row.name}</td><td class="px-2 py-1.5 text-right text-slate-700">${row.monthlyAchievement || "--"}</td><td class="px-2 py-1.5 text-right text-slate-700">${row.monthlyTarget || "--"}</td><td class="px-2 py-1.5 text-right ${rateClass} font-medium">${formatRate(row.rateNum)}</td></tr>`;
+        const isBelowTarget = row.targetNum !== null && row.targetNum !== 0 && row.achievementNum !== null && row.achievementNum < row.targetNum;
+        const achClass = isBelowTarget ? "text-red-500" : "text-slate-700";
+        return `<tr class="table-row border-b border-slate-100"><td class="px-2 py-1.5 text-slate-600">${row.category}</td><td class="px-2 py-1.5 font-medium text-slate-800" title="${row.formula}">${row.name}</td><td class="px-2 py-1.5 text-right ${achClass} font-medium">${row.monthlyAchievement || "--"}</td><td class="px-2 py-1.5 text-right text-slate-700">${row.monthlyTarget || "--"}</td><td class="px-2 py-1.5 text-right ${rateClass} font-medium">${formatRate(row.rateNum)}</td></tr>`;
       }).join("");
     }
 
