@@ -2,7 +2,7 @@
   "title": "XPD指标概览",
   "source": "https://xiaopeng.feishu.cn/wiki/YVCSwf2mViezJwkXPN8c5LB7nVe",
   "baseToken": "Sudzb3xqza2Qnps1MGVcERUFnPh",
-  "updatedAt": "2026-05-21T07:04:17.588Z",
+  "updatedAt": "2026-05-21T08:47:28.822Z",
   "tables": {
     "main": {
       "name": "主要指标",
@@ -60,7 +60,7 @@
         },
         {
           "category": "规范性指标",
-          "monthlyAchievement": "50",
+          "monthlyAchievement": "40",
           "monthlyTarget": "NA",
           "name": "AI检核交付质量-G类",
           "remark": "*试运行期间暂无目标值",
@@ -3392,7 +3392,7 @@
     },
     {
       "category": "规范性指标",
-      "monthlyAchievement": "50",
+      "monthlyAchievement": "40",
       "monthlyTarget": "NA",
       "name": "AI检核交付质量-G类",
       "remark": "*试运行期间暂无目标值",
