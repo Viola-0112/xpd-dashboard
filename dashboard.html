@@ -1483,8 +1483,7 @@
         initGrid(validateLayout(savedLayout));
         loadExternalData(true);
       } else {
-        // localStorage 为空（如清除浏览器）：让 loadExternalData 从服务器恢复布局
-        initGrid(defaultLayout);
+        // localStorage 为空：让 loadExternalData 负责首次渲染（从服务器或 layout.json 恢复）
         loadExternalData(false);
       }
 
