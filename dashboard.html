@@ -8,6 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/10.1.2/gridstack.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/10.1.2/gridstack-all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <style>
     .card-hover { transition: all 0.2s ease; }
     .card-hover:hover { transform: translateY(-1px); box-shadow: 0 6px 20px -4px rgba(0,0,0,0.08); }
@@ -68,6 +69,11 @@
       background: white; border-radius: 1rem; width: 90%; max-width: 420px;
       padding: 2rem; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
     }
+    .sortable-ghost { opacity: 0.4; background: rgba(59,130,246,0.08); border-radius: 0.5rem; }
+    .sortable-chosen { cursor: grabbing; }
+    .sortable-drag { opacity: 0.9; }
+    .edit-mode .sortable-item { cursor: grab; }
+    .edit-mode .sortable-item:active { cursor: grabbing; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
@@ -165,24 +171,24 @@
     // 数据层
     // ============================================================
     let rawRecords = [
-      { category: "规范性指标", monthlyAchievement: "85%", monthlyTarget: "95%", name: "交付规范性-G类", formula: "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)", total: "NA", achievementRate: 0.894736842 },
-      { category: "规范性指标", monthlyAchievement: "91%", monthlyTarget: "90%", name: "交付规范性-K类", formula: "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)", total: "NA", achievementRate: 1.011111111 },
-      { category: "规范性指标", monthlyAchievement: "90%", monthlyTarget: "90%", name: "交付规范性-P类", formula: "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)", total: "NA", achievementRate: 1 },
-      { category: "规范性指标", monthlyAchievement: "80%", monthlyTarget: "85%", name: "流程适用性-G类", formula: "=1-不适用/(总数-进行中)", total: "NA", achievementRate: 0.941176471 },
-      { category: "规范性指标", monthlyAchievement: "70%", monthlyTarget: "75%", name: "流程适用性-K类", formula: "=1-不适用/(总数-进行中)", total: "NA", achievementRate: 0.933333333 },
-      { category: "规范性指标", monthlyAchievement: "50", monthlyTarget: "70", name: "AI检核交付质量-G类", formula: "=AVERAGE(AI1,AI2,...AIn)", total: "NA", achievementRate: 0.714285714 },
-      { category: "规范性指标", monthlyAchievement: "50", monthlyTarget: "70", name: "AI检核交付质量-K类", formula: "=AVERAGE(AI1,AI2,...AIn)", total: "NA", achievementRate: 0.714285714 },
-      { category: "组织及文化建设", monthlyAchievement: "4", monthlyTarget: "4", name: "流程培训场次", formula: "含火炬计划、千将计划、中心培训等。", total: "8", achievementRate: 1 },
-      { category: "组织及文化建设", monthlyAchievement: "9.0", monthlyTarget: "8.4", name: "流程满意度", formula: "每半年度一次调研", total: "NA", achievementRate: 1.071428571 },
-      { category: "基础信息", monthlyAchievement: "25", monthlyTarget: "NA", name: "XPD项目", formula: "本月监控/年度累计", total: "50", achievementRate: null },
-      { category: "基础信息", monthlyAchievement: "3000", monthlyTarget: "NA", name: "XPD任务", formula: "本月监控/年度累计", total: "1.2W", achievementRate: null },
-      { category: "系统访问量", monthlyAchievement: "20W", monthlyTarget: "NA", name: "XPD系统", formula: "本月/年度累计", total: "80W", achievementRate: null },
-      { category: "系统访问量", monthlyAchievement: "3000", monthlyTarget: "NA", name: "XPD流程", formula: "本月/年度累计", total: "1W", achievementRate: null },
-      { category: "系统访问量", monthlyAchievement: "3000", monthlyTarget: "NA", name: "浩瀚知识库", formula: "本月/年度累计", total: "1W", achievementRate: null },
-      { category: "基础信息", monthlyAchievement: "39", monthlyTarget: "NA", name: "XPD流程发布（L4）", formula: "本月发布/流程总数", total: "312", achievementRate: null },
-      { category: "基础信息", monthlyAchievement: "200", monthlyTarget: "NA", name: "XPD知识沉淀", formula: "本月新增/文档总数", total: "1.3W", achievementRate: null },
-      { category: "组织及文化建设", monthlyAchievement: "1", monthlyTarget: "1", name: "流程委员会运营", formula: "PTC每半年度一次、XPD-PTC 每季度一次", total: "2", achievementRate: 1 },
-      { category: "组织及文化建设", monthlyAchievement: "90%", monthlyTarget: "85%", name: "流程问题管理", formula: "=1-延期未完成/问题总数", total: "NA", achievementRate: 1.058823529 }
+      { category: "规范性指标", monthlyAchievement: "96.1%", monthlyTarget: "95%", name: "交付规范性-G类", remark: "", formula: "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)", total: "NA", achievementRate: 1.011578947 },
+      { category: "规范性指标", monthlyAchievement: "91.7%", monthlyTarget: "90%", name: "交付规范性-K类", remark: "", formula: "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)", total: "NA", achievementRate: 1.018888889 },
+      { category: "规范性指标", monthlyAchievement: "92.5%", monthlyTarget: "90%", name: "交付规范性-P类", remark: "", formula: "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)", total: "NA", achievementRate: 1.027777778 },
+      { category: "规范性指标", monthlyAchievement: "85%", monthlyTarget: "85%", name: "流程适用性-G类", remark: "", formula: "=1-不适用/(总数-进行中)", total: "NA", achievementRate: 1 },
+      { category: "规范性指标", monthlyAchievement: "70%", monthlyTarget: "75%", name: "流程适用性-K类", remark: "", formula: "=1-不适用/(总数-进行中)", total: "NA", achievementRate: 0.933333333 },
+      { category: "规范性指标", monthlyAchievement: "50", monthlyTarget: "NA", name: "AI检核交付质量-G类", remark: "*试运行期间暂无目标值", formula: "=AVERAGE(AI1,AI2,...AIn)", total: "NA", achievementRate: null },
+      { category: "规范性指标", monthlyAchievement: "NA", monthlyTarget: "NA", name: "AI检核交付质量-K类", remark: "", formula: "=AVERAGE(AI1,AI2,...AIn)", total: "NA", achievementRate: null },
+      { category: "组织及文化建设", monthlyAchievement: "4", monthlyTarget: "4", name: "流程培训场次", remark: "", formula: "含火炬计划、千将计划、中心培训等。", total: "8", achievementRate: 1 },
+      { category: "组织及文化建设", monthlyAchievement: "7.95", monthlyTarget: "NA", name: "流程满意度", remark: "*12/25调研结果", formula: "每半年度一次调研", total: "NA", achievementRate: null },
+      { category: "基础信息", monthlyAchievement: "25", monthlyTarget: "NA", name: "XPD项目", remark: "", formula: "本月监控/年度累计", total: "50", achievementRate: null },
+      { category: "基础信息", monthlyAchievement: "3000", monthlyTarget: "NA", name: "XPD任务", remark: "", formula: "本月监控/年度累计", total: "1.2W", achievementRate: null },
+      { category: "系统访问量", monthlyAchievement: "20W", monthlyTarget: "NA", name: "XPD系统", remark: "", formula: "本月/年度累计", total: "80W", achievementRate: null },
+      { category: "系统访问量", monthlyAchievement: "3000", monthlyTarget: "NA", name: "XPD流程", remark: "", formula: "本月/年度累计", total: "1W", achievementRate: null },
+      { category: "系统访问量", monthlyAchievement: "3000", monthlyTarget: "NA", name: "浩瀚知识库", remark: "", formula: "本月/年度累计", total: "1W", achievementRate: null },
+      { category: "基础信息", monthlyAchievement: "39", monthlyTarget: "NA", name: "XPD流程发布（L4）", remark: "", formula: "本月发布/流程总数", total: "312", achievementRate: null },
+      { category: "基础信息", monthlyAchievement: "200", monthlyTarget: "NA", name: "XPD知识沉淀", remark: "", formula: "本月新增/文档总数", total: "1.3W", achievementRate: null },
+      { category: "组织及文化建设", monthlyAchievement: "1", monthlyTarget: "1", name: "流程委员会运营", remark: "", formula: "PTC每半年度一次、XPD-PTC 每季度一次", total: "2", achievementRate: 1 },
+      { category: "组织及文化建设", monthlyAchievement: "90%", monthlyTarget: "85%", name: "流程问题管理", remark: "", formula: "=1-延期未完成/问题总数", total: "NA", achievementRate: 1.058823529 }
     ];
 
     function parseValue(val) {
@@ -201,6 +207,7 @@
 
     let indicators = [];
     let categories = [];
+    let allTableRecords = { main: [], processList: [], normList: [], applicabilityList: [] };
     let grid = null;
     let charts = {};
     let isEditMode = false;
@@ -208,6 +215,7 @@
     let widgetConfigs = {};
     let widgetIdCounter = 0;
     let pendingWidgetType = null;
+    let sortableInstances = {};
 
     function processData(records) {
       indicators = records.map(r => ({
@@ -242,21 +250,31 @@
     // ============================================================
     function getDefaultConfig(id, type) {
       const base = { titleSize: 14, bodySize: 12, numberSize: 24, themeColor: "blue" };
-      if (type === "kpi") return { ...base, title: "KPI 卡片", type: "kpi", kpis: ["XPD项目", "XPD任务", "XPD系统", "流程培训场次"] };
-      if (type === "chart") return { ...base, title: "图表", type: "chart", chartType: "bar", filterCategory: "", filterNamePrefix: "", showTarget: false };
-      if (type === "combo") return { ...base, title: "组合卡片", type: "combo", items: [{ name: "XPD项目", color: "blue", label: "指标", field: "monthlyAchievement" }] };
-      if (type === "table") return { ...base, title: "数据表格", type: "table", filterCategory: "" };
+      if (type === "kpi") return { ...base, title: "KPI 卡片", type: "kpi", items: [
+        { name: "XPD项目", color: "blue", field: "monthlyAchievement", showRemark: true, colSpan: 3 },
+        { name: "XPD任务", color: "indigo", field: "monthlyAchievement", showRemark: true, colSpan: 3 },
+        { name: "XPD系统", color: "cyan", field: "monthlyAchievement", showRemark: true, colSpan: 3 },
+        { name: "流程培训场次", color: "emerald", field: "monthlyAchievement", showRemark: true, colSpan: 3 }
+      ]};
+      if (type === "chart") return { ...base, title: "图表", type: "chart", chartType: "bar", filterCategory: "", filterNamePrefix: "", showTarget: false, showRemark: false };
+      if (type === "combo") return { ...base, title: "组合卡片", type: "combo", items: [{ name: "XPD项目", color: "blue", label: "指标", field: "monthlyAchievement", showRemark: true, colSpan: 6 }] };
+      if (type === "table") return { ...base, title: "数据表格", type: "table", dataSource: "main", filterCategory: "" };
       return { ...base, title: "组件", type: "chart", chartType: "bar", filterCategory: "", filterNamePrefix: "", showTarget: false };
     }
 
     function getDefaultWidgetConfig(id) {
       switch (id) {
         case "kpi":
-          return { titleSize: 14, bodySize: 12, numberSize: 24, themeColor: "blue", title: "核心指标", type: "kpi", kpis: ["XPD项目", "XPD任务", "XPD系统", "流程培训场次"] };
+          return { titleSize: 14, bodySize: 12, numberSize: 24, themeColor: "blue", title: "核心指标", type: "kpi", items: [
+            { name: "XPD项目", color: "blue", field: "monthlyAchievement", showRemark: true, colSpan: 3 },
+            { name: "XPD任务", color: "indigo", field: "monthlyAchievement", showRemark: true, colSpan: 3 },
+            { name: "XPD系统", color: "cyan", field: "monthlyAchievement", showRemark: true, colSpan: 3 },
+            { name: "流程培训场次", color: "emerald", field: "monthlyAchievement", showRemark: true, colSpan: 3 }
+          ]};
         case "norm":
-          return { titleSize: 14, bodySize: 12, numberSize: 24, themeColor: "indigo", title: "规范性指标达成", type: "chart", chartType: "bar", filterCategory: "规范性指标", filterNamePrefix: "", showTarget: true };
+          return { titleSize: 14, bodySize: 12, numberSize: 24, themeColor: "indigo", title: "规范性指标达成", type: "chart", chartType: "bar", filterCategory: "规范性指标", filterNamePrefix: "", showTarget: true, showRemark: false };
         case "applicability":
-          return { titleSize: 14, bodySize: 12, numberSize: 24, themeColor: "emerald", title: "组织及文化建设", type: "chart", chartType: "bar", filterCategory: "组织及文化建设", filterNamePrefix: "", showTarget: true };
+          return { titleSize: 14, bodySize: 12, numberSize: 24, themeColor: "emerald", title: "组织及文化建设", type: "chart", chartType: "bar", filterCategory: "组织及文化建设", filterNamePrefix: "", showTarget: true, showRemark: false };
         case "xpd":
           return { titleSize: 14, bodySize: 12, numberSize: 24, themeColor: "cyan", title: "XPD 综合概览", type: "combo", items: [
             { name: "XPD系统", color: "blue", label: "系统访问", field: "monthlyAchievement" },
@@ -274,7 +292,7 @@
             { name: "XPD知识沉淀", color: "pink", label: "知识沉淀", field: "monthlyAchievement" }
           ]};
         case "table":
-          return { titleSize: 14, bodySize: 12, numberSize: 24, themeColor: "slate", title: "指标明细表", type: "table", filterCategory: "" };
+          return { titleSize: 14, bodySize: 12, numberSize: 24, themeColor: "slate", title: "指标明细表", type: "table", dataSource: "main", filterCategory: "" };
         default:
           return null;
       }
@@ -284,28 +302,36 @@
     // 布局验证
     // ============================================================
     function validateLayout(layout) {
-      const validNames = new Set(indicators.map(r => r.name));
-      const validCategories = new Set(indicators.map(r => r.category));
-      return layout.map(item => {
+      // 深拷贝，避免修改原始保存的布局
+      const clone = JSON.parse(JSON.stringify(layout));
+      return clone.map(item => {
         if (!item.config) return item;
         const cfg = item.config;
+        // 向后兼容：旧配置使用 kpis 数组
         if (cfg.type === "kpi" && cfg.kpis) {
-          cfg.kpis = cfg.kpis.filter(name => validNames.has(name));
-          if (cfg.kpis.length === 0) {
-            cfg.kpis = ["XPD项目", "XPD任务", "XPD系统", "流程培训场次"].filter(n => validNames.has(n));
-          }
-        }
-        if (cfg.type === "combo" && cfg.items) {
-          cfg.items = cfg.items.filter(item => validNames.has(item.name));
+          cfg.items = cfg.kpis.map((name, i) => ({
+            name, color: ALL_COLORS[i % ALL_COLORS.length], field: "monthlyAchievement", showRemark: true, colSpan: 3
+          }));
           if (cfg.items.length === 0) {
-            cfg.items = [{ name: "XPD项目", color: "blue", label: "指标", field: "monthlyAchievement" }];
+            cfg.items = ["XPD项目", "XPD任务", "XPD系统", "流程培训场次"].map((name, i) => ({
+              name, color: ALL_COLORS[i % ALL_COLORS.length], field: "monthlyAchievement", showRemark: true, colSpan: 3
+            }));
           }
+          delete cfg.kpis;
         }
-        if (cfg.type === "chart" && cfg.filterCategory && !validCategories.has(cfg.filterCategory)) {
-          cfg.filterCategory = "";
+        // 向后兼容：确保 combo 卡片有 showRemark 和 colSpan
+        if (cfg.type === "combo" && cfg.items) {
+          cfg.items = cfg.items.map(it => ({
+            ...it, showRemark: it.showRemark !== false, colSpan: it.colSpan || 6
+          }));
         }
-        if (cfg.type === "table" && cfg.filterCategory && !validCategories.has(cfg.filterCategory)) {
-          cfg.filterCategory = "";
+        // 向后兼容：表格默认数据源
+        if (cfg.type === "table") {
+          if (!cfg.dataSource) cfg.dataSource = "main";
+        }
+        // 向后兼容：图表默认不显示备注
+        if (cfg.type === "chart" && cfg.showRemark === undefined) {
+          cfg.showRemark = false;
         }
         return item;
       });
@@ -346,21 +372,46 @@
       return `<div class="p-4 text-slate-400">未知组件类型</div>`;
     }
 
+    function getSubLabel(item, subField) {
+      if (subField === 'none') return '';
+      if (subField === 'total') return item.total && item.total !== 'NA' ? '累计：' + item.total : '';
+      if (subField === 'monthlyTarget') return item.monthlyTarget && item.monthlyTarget !== 'NA' ? '目标：' + item.monthlyTarget : '';
+      if (subField === 'monthlyAchievement') return item.monthlyAchievement && item.monthlyAchievement !== 'NA' ? '达成：' + item.monthlyAchievement : '';
+      if (subField === 'achievementRate') return item.rateNum !== null ? '达成率：' + formatRate(item.rateNum) : '';
+      // 默认逻辑
+      if (item.total && item.total !== 'NA') return '累计：' + item.total;
+      if (item.monthlyTarget && item.monthlyTarget !== 'NA') return '目标：' + item.monthlyTarget;
+      return '';
+    }
+
     function renderKPIBody(id, cfg) {
-      const kpis = cfg.kpis || [];
+      // 向后兼容：旧配置使用 kpis 数组
+      if (cfg.kpis && !cfg.items) {
+        cfg.items = cfg.kpis.map((name, i) => ({ name, color: ALL_COLORS[i % ALL_COLORS.length], field: "monthlyAchievement", subField: "", showRemark: true, colSpan: 3 }));
+      }
+      const items = cfg.items || [];
       const ns = cfg.numberSize || 24;
       const bs = cfg.bodySize || 12;
       return `
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 h-full items-center">
-          ${kpis.map((name, i) => {
-            const item = indicators.find(r => r.name === name) || {};
-            const color = ALL_COLORS[i % ALL_COLORS.length];
-            const c = COLOR_MAP[color];
+        <div class="grid grid-cols-12 gap-3 h-full items-start sortable-container" data-widget-id="${id}">
+          ${items.map((itemCfg, i) => {
+            const item = indicators.find(r => r.name === itemCfg.name) || {};
+            const c = COLOR_MAP[itemCfg.color || "blue"];
+            let value = "--";
+            if (itemCfg.field === "monthlyAchievement") value = item.monthlyAchievement || "--";
+            else if (itemCfg.field === "monthlyTarget") value = item.monthlyTarget || "--";
+            else if (itemCfg.field === "total") value = item.total || "--";
+            else if (itemCfg.field === "achievementRate") value = formatRate(item.rateNum);
+            const subLabel = getSubLabel(item, itemCfg.subField);
+            const colSpan = itemCfg.colSpan || 3;
             return `
-              <div class="bg-gradient-to-br ${c.grad} rounded-lg p-3 text-white flex flex-col justify-center card-hover" style="font-size:${bs}px">
-                <div style="font-size:${bs}px;opacity:0.8;margin-bottom:4px">${name.replace("场次","")}</div>
-                <div style="font-size:${ns}px;font-weight:700;line-height:1.2">${item.monthlyAchievement || "--"}</div>
-                <div style="font-size:${bs}px;opacity:0.7;margin-top:2px">目标/累计：${item.total || item.monthlyTarget || "--"}</div>
+              <div class="col-span-${colSpan} sortable-item" data-index="${i}">
+                <div class="bg-gradient-to-br ${c.grad} rounded-lg p-3 text-white flex flex-col justify-center card-hover" style="font-size:${bs}px; min-height: 110px;">
+                  <div style="font-size:${bs}px;opacity:0.8;margin-bottom:4px">${itemCfg.label || itemCfg.name.replace("场次","")}</div>
+                  <div style="font-size:${ns}px;font-weight:700;line-height:1.2">${value}</div>
+                  <div style="font-size:${bs}px;opacity:0.7;margin-top:2px">${subLabel}</div>
+                  ${itemCfg.showRemark && item.remark ? `<div style="font-size:${bs-1}px;font-weight:bold;opacity:0.6;margin-top:auto;padding-top:4px;">${item.remark}</div>` : ''}
+                </div>
               </div>
             `;
           }).join("")}
@@ -372,10 +423,10 @@
       const items = cfg.items || [];
       const ns = cfg.numberSize || 28;
       const bs = cfg.bodySize || 12;
-      const cols = items.length <= 2 ? 2 : (items.length <= 3 ? 3 : 4);
+      const defaultSpan = Math.max(3, Math.floor(12 / Math.max(1, items.length)));
       return `
-        <div class="grid grid-cols-${cols} gap-3 h-full items-center">
-          ${items.map(itemCfg => {
+        <div class="grid grid-cols-12 gap-3 h-full items-start sortable-container" data-widget-id="${id}">
+          ${items.map((itemCfg, i) => {
             const item = indicators.find(r => r.name === itemCfg.name) || {};
             const c = COLOR_MAP[itemCfg.color || "blue"];
             let value = "--";
@@ -383,14 +434,16 @@
             else if (itemCfg.field === "monthlyTarget") value = item.monthlyTarget || "--";
             else if (itemCfg.field === "total") value = item.total || "--";
             else if (itemCfg.field === "achievementRate") value = formatRate(item.rateNum);
-            // 未达标标红：有目标值且实际达成低于目标
-            const isBelowTarget = item.targetNum !== null && item.targetNum !== 0 && item.achievementNum !== null && item.achievementNum < item.targetNum;
-            const valueColor = isBelowTarget ? "color:#ef4444 !important;" : "";
+            const subLabel = getSubLabel(item, itemCfg.subField);
+            const colSpan = itemCfg.colSpan || defaultSpan;
             return `
-              <div class="bg-gradient-to-br ${c.grad} rounded-lg p-3 text-white flex flex-col justify-center card-hover" style="font-size:${bs}px">
-                <div style="font-size:${bs}px;opacity:0.8;margin-bottom:4px">${itemCfg.label || item.name}</div>
-                <div style="font-size:${ns}px;font-weight:700;line-height:1.2;${valueColor}">${value}</div>
-                <div style="font-size:${bs}px;opacity:0.7;margin-top:2px">${item.total ? "累计：" + item.total : (item.monthlyTarget ? "目标：" + item.monthlyTarget : "")}</div>
+              <div class="col-span-${colSpan} sortable-item" data-index="${i}">
+                <div class="bg-gradient-to-br ${c.grad} rounded-lg p-3 text-white flex flex-col justify-center card-hover" style="font-size:${bs}px; min-height: 110px;">
+                  <div style="font-size:${bs}px;opacity:0.8;margin-bottom:4px">${itemCfg.label || item.name}</div>
+                  <div style="font-size:${ns}px;font-weight:700;line-height:1.2">${value}</div>
+                  <div style="font-size:${bs}px;opacity:0.7;margin-top:2px">${subLabel}</div>
+                  ${itemCfg.showRemark && item.remark ? `<div style="font-size:${bs-1}px;font-weight:bold;opacity:0.6;margin-top:auto;padding-top:4px;">${item.remark}</div>` : ''}
+                </div>
               </div>
             `;
           }).join("")}
@@ -401,7 +454,18 @@
     function renderChartBody(id, cfg) {
       const canvasId = "chart-" + id;
       setTimeout(() => initChart(id, canvasId, cfg), 50);
-      return `<div class="h-full"><canvas id="${canvasId}"></canvas></div>`;
+      const bs = cfg.bodySize || 12;
+      let remarkHtml = "";
+      if (cfg.showRemark) {
+        let data = indicators;
+        if (cfg.filterCategory) data = data.filter(r => r.category === cfg.filterCategory);
+        if (cfg.filterNamePrefix) data = data.filter(r => r.name.startsWith(cfg.filterNamePrefix));
+        const remarks = data.filter(r => r.remark).map(r => `<span class="text-slate-500">${r.name}：</span><span class="font-semibold text-slate-600">${r.remark}</span>`);
+        if (remarks.length > 0) {
+          remarkHtml = `<div class="mb-2 text-slate-500" style="font-size:${bs}px">${remarks.join("； ")}</div>`;
+        }
+      }
+      return `<div class="flex flex-col h-full">${remarkHtml}<div class="flex-1"><canvas id="${canvasId}"></canvas></div></div>`;
     }
 
     function initChart(widgetId, canvasId, cfg) {
@@ -471,33 +535,56 @@
     }
 
     function renderTableBody(id, cfg) {
-      const catOptions = categories.map(c => `<option value="${c}" ${cfg.filterCategory === c ? "selected" : ""}>${c}</option>`).join("");
-      const preFilter = cfg.filterCategory || "";
-      const rows = preFilter ? indicators.filter(r => r.category === preFilter) : indicators;
+      const dataSource = cfg.dataSource || "main";
       const bs = cfg.bodySize || 12;
 
+      if (dataSource === "main") {
+        const catOptions = categories.map(c => `<option value="${c}" ${cfg.filterCategory === c ? "selected" : ""}>${c}</option>`).join("");
+        const preFilter = cfg.filterCategory || "";
+        const rows = preFilter ? indicators.filter(r => r.category === preFilter) : indicators;
+        return `
+          <div class="flex flex-col h-full" style="font-size:${bs}px">
+            <div class="flex flex-wrap gap-2 mb-3">
+              <select id="tableFilter-${id}" onchange="filterTableBody('${id}')" class="border border-slate-200 rounded-md px-2 py-1 text-slate-600" style="font-size:${bs}px">
+                <option value="">全部分类</option>
+                ${catOptions}
+              </select>
+              <input type="text" id="tableSearch-${id}" placeholder="搜索指标..." oninput="filterTableBody('${id}')" class="border border-slate-200 rounded-md px-2 py-1 flex-1 min-w-[120px]" style="font-size:${bs}px">
+              <button onclick="exportTable('${id}')" class="px-2 py-1 border border-slate-200 rounded-md hover:bg-slate-50" style="font-size:${bs}px">导出 CSV</button>
+            </div>
+            <div class="flex-1 overflow-auto">
+              <table class="w-full text-left" style="font-size:${bs}px">
+                <thead class="text-slate-500 uppercase bg-slate-50 border-b border-slate-200">
+                  <tr><th class="px-2 py-2 font-medium">分类</th><th class="px-2 py-2 font-medium">指标</th><th class="px-2 py-2 font-medium text-right">达成</th><th class="px-2 py-2 font-medium text-right">目标</th><th class="px-2 py-2 font-medium text-right">达成率</th></tr>
+                </thead>
+                <tbody id="tbody-${id}">
+                  ${rows.map(row => {
+                    const rateClass = row.rateNum >= 1 ? "text-emerald-600" : row.rateNum > 0 ? "text-amber-600" : "text-slate-400";
+                    return `<tr class="table-row border-b border-slate-100"><td class="px-2 py-1.5 text-slate-600">${row.category}</td><td class="px-2 py-1.5 font-medium text-slate-800" title="${row.formula}">${row.name}</td><td class="px-2 py-1.5 text-right text-slate-700">${row.monthlyAchievement || "--"}</td><td class="px-2 py-1.5 text-right text-slate-700">${row.monthlyTarget || "--"}</td><td class="px-2 py-1.5 text-right ${rateClass} font-medium">${formatRate(row.rateNum)}</td></tr>`;
+                  }).join("")}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
+
+      // 动态表格（其他数据源）
+      const records = allTableRecords[dataSource] || [];
+      const keys = records.length > 0 ? Object.keys(records[0]) : [];
       return `
         <div class="flex flex-col h-full" style="font-size:${bs}px">
           <div class="flex flex-wrap gap-2 mb-3">
-            <select id="tableFilter-${id}" onchange="filterTableBody('${id}')" class="border border-slate-200 rounded-md px-2 py-1 text-slate-600" style="font-size:${bs}px">
-              <option value="">全部分类</option>
-              ${catOptions}
-            </select>
-            <input type="text" id="tableSearch-${id}" placeholder="搜索指标..." oninput="filterTableBody('${id}')" class="border border-slate-200 rounded-md px-2 py-1 flex-1 min-w-[120px]" style="font-size:${bs}px">
-            <button onclick="exportTable()" class="px-2 py-1 border border-slate-200 rounded-md hover:bg-slate-50" style="font-size:${bs}px">导出 CSV</button>
+            <input type="text" id="tableSearch-${id}" placeholder="搜索..." oninput="filterTableBody('${id}')" class="border border-slate-200 rounded-md px-2 py-1 flex-1 min-w-[120px]" style="font-size:${bs}px">
+            <button onclick="exportTable('${id}')" class="px-2 py-1 border border-slate-200 rounded-md hover:bg-slate-50" style="font-size:${bs}px">导出 CSV</button>
           </div>
           <div class="flex-1 overflow-auto">
             <table class="w-full text-left" style="font-size:${bs}px">
               <thead class="text-slate-500 uppercase bg-slate-50 border-b border-slate-200">
-                <tr><th class="px-2 py-2 font-medium">分类</th><th class="px-2 py-2 font-medium">指标</th><th class="px-2 py-2 font-medium text-right">达成</th><th class="px-2 py-2 font-medium text-right">目标</th><th class="px-2 py-2 font-medium text-right">达成率</th></tr>
+                <tr>${keys.map(k => `<th class="px-2 py-2 font-medium">${k}</th>`).join("")}</tr>
               </thead>
               <tbody id="tbody-${id}">
-                ${rows.map(row => {
-                  const rateClass = row.rateNum >= 1 ? "text-emerald-600" : row.rateNum > 0 ? "text-amber-600" : "text-slate-400";
-                  const isBelowTarget = row.targetNum !== null && row.targetNum !== 0 && row.achievementNum !== null && row.achievementNum < row.targetNum;
-                  const achClass = isBelowTarget ? "text-red-500" : "text-slate-700";
-                  return `<tr class="table-row border-b border-slate-100"><td class="px-2 py-1.5 text-slate-600">${row.category}</td><td class="px-2 py-1.5 font-medium text-slate-800" title="${row.formula}">${row.name}</td><td class="px-2 py-1.5 text-right ${achClass} font-medium">${row.monthlyAchievement || "--"}</td><td class="px-2 py-1.5 text-right text-slate-700">${row.monthlyTarget || "--"}</td><td class="px-2 py-1.5 text-right ${rateClass} font-medium">${formatRate(row.rateNum)}</td></tr>`;
-                }).join("")}
+                ${records.map(row => `<tr class="table-row border-b border-slate-100">${keys.map(k => `<td class="px-2 py-1.5 text-slate-700">${row[k] || ""}</td>`).join("")}</tr>`).join("")}
               </tbody>
             </table>
           </div>
@@ -507,27 +594,54 @@
 
     function filterTableBody(widgetId) {
       const keyword = document.getElementById("tableSearch-" + widgetId).value.trim().toLowerCase();
-      const cat = document.getElementById("tableFilter-" + widgetId).value;
+      const cfg = widgetConfigs[widgetId];
+      const dataSource = cfg?.dataSource || "main";
       const tbody = document.getElementById("tbody-" + widgetId);
-      const rows = indicators.filter(r => {
-        const matchKeyword = !keyword || r.name.toLowerCase().includes(keyword) || r.category.toLowerCase().includes(keyword);
-        const matchCat = !cat || r.category === cat;
-        return matchKeyword && matchCat;
-      });
-      tbody.innerHTML = rows.map(row => {
-        const rateClass = row.rateNum >= 1 ? "text-emerald-600" : row.rateNum > 0 ? "text-amber-600" : "text-slate-400";
-        const isBelowTarget = row.targetNum !== null && row.targetNum !== 0 && row.achievementNum !== null && row.achievementNum < row.targetNum;
-        const achClass = isBelowTarget ? "text-red-500" : "text-slate-700";
-        return `<tr class="table-row border-b border-slate-100"><td class="px-2 py-1.5 text-slate-600">${row.category}</td><td class="px-2 py-1.5 font-medium text-slate-800" title="${row.formula}">${row.name}</td><td class="px-2 py-1.5 text-right ${achClass} font-medium">${row.monthlyAchievement || "--"}</td><td class="px-2 py-1.5 text-right text-slate-700">${row.monthlyTarget || "--"}</td><td class="px-2 py-1.5 text-right ${rateClass} font-medium">${formatRate(row.rateNum)}</td></tr>`;
-      }).join("");
+      if (!tbody) return;
+
+      if (dataSource === "main") {
+        const cat = document.getElementById("tableFilter-" + widgetId)?.value || "";
+        const rows = indicators.filter(r => {
+          const matchKeyword = !keyword || r.name.toLowerCase().includes(keyword) || r.category.toLowerCase().includes(keyword);
+          const matchCat = !cat || r.category === cat;
+          return matchKeyword && matchCat;
+        });
+        tbody.innerHTML = rows.map(row => {
+          const rateClass = row.rateNum >= 1 ? "text-emerald-600" : row.rateNum > 0 ? "text-amber-600" : "text-slate-400";
+          return `<tr class="table-row border-b border-slate-100"><td class="px-2 py-1.5 text-slate-600">${row.category}</td><td class="px-2 py-1.5 font-medium text-slate-800" title="${row.formula}">${row.name}</td><td class="px-2 py-1.5 text-right text-slate-700">${row.monthlyAchievement || "--"}</td><td class="px-2 py-1.5 text-right text-slate-700">${row.monthlyTarget || "--"}</td><td class="px-2 py-1.5 text-right ${rateClass} font-medium">${formatRate(row.rateNum)}</td></tr>`;
+        }).join("");
+      } else {
+        const records = allTableRecords[dataSource] || [];
+        const keys = records.length > 0 ? Object.keys(records[0]) : [];
+        const rows = records.filter(r => {
+          if (!keyword) return true;
+          return keys.some(k => String(r[k] || "").toLowerCase().includes(keyword));
+        });
+        tbody.innerHTML = rows.map(row => `<tr class="table-row border-b border-slate-100">${keys.map(k => `<td class="px-2 py-1.5 text-slate-700">${row[k] || ""}</td>`).join("")}</tr>`).join("");
+      }
     }
 
-    function exportTable() {
-      const csv = [["分类", "指标名称", "月度达成", "月度目标", "达成率", "总数", "公式说明"], ...indicators.map(r => [r.category, r.name, r.monthlyAchievement, r.monthlyTarget, formatRate(r.rateNum), r.total, r.formula])].map(row => row.join(",")).join("\n");
+    function exportTable(widgetId) {
+      const cfg = widgetConfigs[widgetId];
+      const dataSource = cfg?.dataSource || "main";
+      let csv = "";
+      let filename = "";
+
+      if (dataSource === "main") {
+        csv = [["分类", "指标名称", "月度达成", "月度目标", "达成率", "总数", "公式说明"], ...indicators.map(r => [r.category, r.name, r.monthlyAchievement, r.monthlyTarget, formatRate(r.rateNum), r.total, r.formula])].map(row => row.join(",")).join("\n");
+        filename = "指标明细_" + new Date().toISOString().slice(0, 10) + ".csv";
+      } else {
+        const records = allTableRecords[dataSource] || [];
+        const keys = records.length > 0 ? Object.keys(records[0]) : [];
+        csv = [keys, ...records.map(r => keys.map(k => r[k] || ""))].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
+        const dsNames = { processList: "流程清单", normList: "规范性清单", applicabilityList: "适用性清单" };
+        filename = (dsNames[dataSource] || dataSource) + "_" + new Date().toISOString().slice(0, 10) + ".csv";
+      }
+
       const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = "指标明细_" + new Date().toISOString().slice(0, 10) + ".csv";
+      link.download = filename;
       link.click();
     }
 
@@ -585,6 +699,35 @@
       if (titleEl) titleEl.style.fontSize = ts + "px";
       if (header) header.style.background = (COLOR_MAP[cfg.themeColor]?.light || '#f8fafc');
       if (cfg.type === "chart") setTimeout(() => initChart(id, "chart-" + id, cfg), 50);
+      if (cfg.type === "kpi" || cfg.type === "combo") setTimeout(() => initSortable(id), 50);
+    }
+
+    function initSortable(widgetId) {
+      const container = document.querySelector(`#body-${widgetId} .sortable-container`);
+      if (!container) return;
+      if (sortableInstances[widgetId]) { sortableInstances[widgetId].destroy(); delete sortableInstances[widgetId]; }
+      sortableInstances[widgetId] = Sortable.create(container, {
+        animation: 150,
+        disabled: !isEditMode,
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
+        onEnd: function(evt) {
+          const cfg = widgetConfigs[widgetId];
+          if (!cfg || !cfg.items) return;
+          const oldIndex = evt.oldIndex;
+          const newIndex = evt.newIndex;
+          if (oldIndex === newIndex) return;
+          const item = cfg.items.splice(oldIndex, 1)[0];
+          cfg.items.splice(newIndex, 0, item);
+          saveLayoutToHash();
+        }
+      });
+    }
+
+    function destroyAllSortable() {
+      Object.values(sortableInstances).forEach(s => s.destroy());
+      sortableInstances = {};
     }
 
     // ============================================================
@@ -644,7 +787,6 @@
       const form = document.getElementById("configForm");
       const catOptions = categories.map(c => `<option value="${c}" ${cfg.filterCategory === c ? "selected" : ""}>${c}</option>`).join("");
       const allNames = [...new Set(indicators.map(r => r.name))];
-      const nameOptions = allNames.map(n => `<option value="${n}" ${cfg.kpis && cfg.kpis.includes(n) ? "selected" : ""}>${n}</option>`).join("");
       const fieldOptions = [
         { v: "monthlyAchievement", l: "月度达成" },
         { v: "monthlyTarget", l: "月度目标" },
@@ -683,14 +825,35 @@
       `;
 
       if (cfg.type === "kpi") {
+        // 向后兼容
+        if (cfg.kpis && !cfg.items) {
+          cfg.items = cfg.kpis.map((name, i) => ({ name, color: ALL_COLORS[i % ALL_COLORS.length], field: "monthlyAchievement", showRemark: true, colSpan: 3 }));
+        }
         html += `
           <div class="config-section">
-            <div class="config-section-title">数据源</div>
-            <div>
-              <label class="block text-sm font-medium text-slate-700 mb-1">显示的 KPI 指标（最多4个）</label>
-              <select id="cfg-kpis" multiple size="6" class="w-full text-sm border border-slate-200 rounded-md px-3 py-2">${nameOptions}</select>
-              <p class="text-xs text-slate-400 mt-1">按住 Ctrl 键可多选</p>
+            <div class="config-section-title">KPI 卡片配置</div>
+            <div id="kpiItems" class="space-y-3">
+              ${(cfg.items || []).map((it, idx) => `
+                <div class="border border-slate-200 rounded-md p-3 bg-slate-50">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium text-slate-700">卡片 ${idx + 1}</span>
+                    ${cfg.items.length > 1 ? `<button onclick="removeKpiItem(${idx})" class="text-xs text-red-500 hover:text-red-700">删除</button>` : ''}
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <select id="cfg-kpi-name-${idx}" class="text-xs border border-slate-200 rounded-md px-2 py-1">${allNames.map(n => `<option value="${n}" ${it.name === n ? "selected" : ""}>${n}</option>`).join("")}</select>
+                    <select id="cfg-kpi-field-${idx}" class="text-xs border border-slate-200 rounded-md px-2 py-1">${fieldOptions.map(f => `<option value="${f.v}" ${it.field === f.v ? "selected" : ""}>${f.l}</option>`).join("")}</select>
+                    <select id="cfg-kpi-color-${idx}" class="text-xs border border-slate-200 rounded-md px-2 py-1">${ALL_COLORS.map(c => `<option value="${c}" ${it.color === c ? "selected" : ""}>${c}</option>`).join("")}</select>
+                    <input type="number" id="cfg-kpi-colSpan-${idx}" value="${it.colSpan || 3}" min="1" max="12" placeholder="宽度(1-12)" class="text-xs border border-slate-200 rounded-md px-2 py-1">
+                    <select id="cfg-kpi-subField-${idx}" class="text-xs border border-slate-200 rounded-md px-2 py-1">${[{v:'',l:'自动'},{v:'total',l:'累计'},{v:'monthlyTarget',l:'目标'},{v:'monthlyAchievement',l:'达成'},{v:'achievementRate',l:'达成率'},{v:'none',l:'不显示'}].map(f => `<option value="${f.v}" ${it.subField === f.v ? "selected" : ""}>${f.l}</option>`).join("")}</select>
+                  </div>
+                  <div class="flex items-center gap-2 mt-2">
+                    <input type="checkbox" id="cfg-kpi-showRemark-${idx}" ${it.showRemark ? "checked" : ""} class="rounded border-slate-300">
+                    <label for="cfg-kpi-showRemark-${idx}" class="text-xs text-slate-600">显示备注</label>
+                  </div>
+                </div>
+              `).join("")}
             </div>
+            <button onclick="addKpiItem()" class="mt-2 text-sm text-blue-600 hover:text-blue-800 font-medium">+ 添加卡片</button>
           </div>
         `;
       }
@@ -711,6 +874,12 @@
                     <input type="text" id="cfg-item-label-${idx}" value="${it.label || ''}" placeholder="显示标签" class="text-xs border border-slate-200 rounded-md px-2 py-1">
                     <select id="cfg-item-field-${idx}" class="text-xs border border-slate-200 rounded-md px-2 py-1">${fieldOptions.map(f => `<option value="${f.v}" ${it.field === f.v ? "selected" : ""}>${f.l}</option>`).join("")}</select>
                     <select id="cfg-item-color-${idx}" class="text-xs border border-slate-200 rounded-md px-2 py-1">${ALL_COLORS.map(c => `<option value="${c}" ${it.color === c ? "selected" : ""}>${c}</option>`).join("")}</select>
+                    <input type="number" id="cfg-item-colSpan-${idx}" value="${it.colSpan || 6}" min="1" max="12" placeholder="宽度(1-12)" class="text-xs border border-slate-200 rounded-md px-2 py-1">
+                    <select id="cfg-item-subField-${idx}" class="text-xs border border-slate-200 rounded-md px-2 py-1">${[{v:'',l:'自动'},{v:'total',l:'累计'},{v:'monthlyTarget',l:'目标'},{v:'monthlyAchievement',l:'达成'},{v:'achievementRate',l:'达成率'},{v:'none',l:'不显示'}].map(f => `<option value="${f.v}" ${it.subField === f.v ? "selected" : ""}>${f.l}</option>`).join("")}</select>
+                  </div>
+                  <div class="flex items-center gap-2 mt-2">
+                    <input type="checkbox" id="cfg-item-showRemark-${idx}" ${it.showRemark !== false ? "checked" : ""} class="rounded border-slate-300">
+                    <label for="cfg-item-showRemark-${idx}" class="text-xs text-slate-600">显示备注</label>
                   </div>
                 </div>
               `).join("")}
@@ -749,22 +918,40 @@
                 <input type="checkbox" id="cfg-showTarget" ${cfg.showTarget ? "checked" : ""} class="rounded border-slate-300">
                 <label for="cfg-showTarget" class="text-sm text-slate-700">显示目标值对比</label>
               </div>
+              <div class="flex items-center gap-2">
+                <input type="checkbox" id="cfg-showRemark" ${cfg.showRemark ? "checked" : ""} class="rounded border-slate-300">
+                <label for="cfg-showRemark" class="text-sm text-slate-700">显示备注</label>
+              </div>
             </div>
           </div>
         `;
       }
 
       if (cfg.type === "table") {
+        const availableTables = [
+          { key: "main", label: "主要指标" },
+          { key: "processList", label: "流程清单" },
+          { key: "normList", label: "规范性清单" },
+          { key: "applicabilityList", label: "适用性清单" }
+        ];
+        const ds = cfg.dataSource || "main";
         html += `
           <div class="config-section">
             <div class="config-section-title">数据源</div>
             <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">数据表</label>
+              <select id="cfg-dataSource" class="w-full text-sm border border-slate-200 rounded-md px-3 py-2">
+                ${availableTables.map(t => `<option value="${t.key}" ${ds === t.key ? "selected" : ""}>${t.label}</option>`).join("")}
+              </select>
+            </div>
+            ${ds === "main" ? `
+            <div class="mt-3">
               <label class="block text-sm font-medium text-slate-700 mb-1">默认分类筛选</label>
               <select id="cfg-filterCategory" class="w-full text-sm border border-slate-200 rounded-md px-3 py-2">
                 <option value="" ${!cfg.filterCategory ? "selected" : ""}>不筛选（全部）</option>
                 ${catOptions}
               </select>
-            </div>
+            </div>` : ""}
           </div>
         `;
       }
@@ -789,7 +976,21 @@
       const cfg = widgetConfigs[activeConfigWidget];
       if (!cfg.items) cfg.items = [];
       const allNames = [...new Set(indicators.map(r => r.name))];
-      cfg.items.push({ name: allNames[0] || "", label: "", field: "monthlyAchievement", color: "blue" });
+      cfg.items.push({ name: allNames[0] || "", label: "", field: "monthlyAchievement", color: "blue", showRemark: true, colSpan: 6 });
+      openConfig(activeConfigWidget);
+    };
+
+    window.removeKpiItem = function(idx) {
+      const cfg = widgetConfigs[activeConfigWidget];
+      cfg.items.splice(idx, 1);
+      openConfig(activeConfigWidget);
+    };
+
+    window.addKpiItem = function() {
+      const cfg = widgetConfigs[activeConfigWidget];
+      if (!cfg.items) cfg.items = [];
+      const allNames = [...new Set(indicators.map(r => r.name))];
+      cfg.items.push({ name: allNames[0] || "", color: "blue", field: "monthlyAchievement", showRemark: true, colSpan: 3 });
       openConfig(activeConfigWidget);
     };
 
@@ -805,8 +1006,20 @@
       if (activeSwatch) cfg.themeColor = activeSwatch.getAttribute("data-color");
 
       if (cfg.type === "kpi") {
-        const sel = document.getElementById("cfg-kpis");
-        cfg.kpis = Array.from(sel.selectedOptions).map(o => o.value).slice(0, 4);
+        const container = document.getElementById("kpiItems");
+        const count = container ? container.children.length : 0;
+        cfg.items = [];
+        for (let i = 0; i < count; i++) {
+          cfg.items.push({
+            name: document.getElementById(`cfg-kpi-name-${i}`).value,
+            field: document.getElementById(`cfg-kpi-field-${i}`).value,
+            color: document.getElementById(`cfg-kpi-color-${i}`).value,
+            colSpan: parseInt(document.getElementById(`cfg-kpi-colSpan-${i}`).value) || 3,
+            subField: document.getElementById(`cfg-kpi-subField-${i}`).value,
+            showRemark: document.getElementById(`cfg-kpi-showRemark-${i}`).checked
+          });
+        }
+        delete cfg.kpis;
       }
 
       if (cfg.type === "combo") {
@@ -818,7 +1031,10 @@
             name: document.getElementById(`cfg-item-name-${i}`).value,
             label: document.getElementById(`cfg-item-label-${i}`).value,
             field: document.getElementById(`cfg-item-field-${i}`).value,
-            color: document.getElementById(`cfg-item-color-${i}`).value
+            color: document.getElementById(`cfg-item-color-${i}`).value,
+            colSpan: parseInt(document.getElementById(`cfg-item-colSpan-${i}`)?.value) || 6,
+            subField: document.getElementById(`cfg-item-subField-${i}`)?.value || "",
+            showRemark: document.getElementById(`cfg-item-showRemark-${i}`)?.checked !== false
           });
         }
       }
@@ -828,10 +1044,16 @@
         cfg.filterCategory = document.getElementById("cfg-filterCategory").value;
         cfg.filterNamePrefix = document.getElementById("cfg-filterNamePrefix").value.trim();
         cfg.showTarget = document.getElementById("cfg-showTarget").checked;
+        cfg.showRemark = document.getElementById("cfg-showRemark").checked;
       }
 
       if (cfg.type === "table") {
-        cfg.filterCategory = document.getElementById("cfg-filterCategory").value;
+        cfg.dataSource = document.getElementById("cfg-dataSource").value;
+        if (cfg.dataSource === "main") {
+          cfg.filterCategory = document.getElementById("cfg-filterCategory").value;
+        } else {
+          cfg.filterCategory = "";
+        }
       }
 
       const titleEl = document.getElementById("title-" + activeConfigWidget);
@@ -892,6 +1114,7 @@
         const el = buildWidget(item);
         grid.addWidget(el);
         if (item.config.type === "chart") setTimeout(() => initChart(item.id, "chart-" + item.id, item.config), 100);
+        if (item.config.type === "kpi" || item.config.type === "combo") setTimeout(() => initSortable(item.id), 100);
       });
 
       if (isEditMode) { grid.enable(); document.querySelectorAll("[id^='title-']").forEach(el => el.contentEditable = true); }
@@ -904,11 +1127,13 @@
       const banner = document.getElementById("editBanner");
       document.body.classList.toggle("edit-mode", isEditMode);
       document.querySelectorAll("[id^='title-']").forEach(el => { el.contentEditable = isEditMode; });
+      // 启用/禁用小卡片拖拽
+      Object.values(sortableInstances).forEach(s => { s.option("disabled", !isEditMode); });
       if (isEditMode) {
         btn.textContent = "退出编辑"; btn.classList.replace("bg-slate-100", "bg-blue-100"); btn.classList.replace("text-slate-700", "text-blue-700");
         banner.classList.remove("hidden"); grid.enable();
       } else {
-        btn.textContent = "编辑布局"; btn.classList.replace("bg-blue-100", "bg-slate-100"); btn.classList.replace("text-blue-700", "text-slate-700");
+        btn.textContent = "编辑布局"; btn.classList.replace("bg-blue-100", "bg-slate-100"); btn.classList.replace("text-blue-700", "text-blue-700");
         banner.classList.add("hidden"); grid.disable(); saveLayoutToHash();
       }
     }
@@ -1035,8 +1260,16 @@
             if (xhr.status === 200 || xhr.status === 0) {
               try {
                 const json = JSON.parse(xhr.responseText);
+                allTableRecords.main = (json.tables && json.tables.main && Array.isArray(json.tables.main.records)) ? json.tables.main.records : (json.records || []);
+                allTableRecords.processList = (json.tables && json.tables.processList && Array.isArray(json.tables.processList.records)) ? json.tables.processList.records : [];
+                allTableRecords.normList = (json.tables && json.tables.normList && Array.isArray(json.tables.normList.records)) ? json.tables.normList.records : [];
+                allTableRecords.applicabilityList = (json.tables && json.tables.applicabilityList && Array.isArray(json.tables.applicabilityList.records)) ? json.tables.applicabilityList.records : [];
                 if (json.records && Array.isArray(json.records)) {
                   rawRecords = json.records;
+                  processData(rawRecords);
+                  resolve();
+                } else if (allTableRecords.main.length > 0) {
+                  rawRecords = allTableRecords.main;
                   processData(rawRecords);
                   resolve();
                 } else {
@@ -1062,8 +1295,16 @@
         fetch(url)
           .then(res => res.ok ? res.json() : Promise.reject(new Error("加载失败")))
           .then(json => {
+            allTableRecords.main = (json.tables && json.tables.main && Array.isArray(json.tables.main.records)) ? json.tables.main.records : (json.records || []);
+            allTableRecords.processList = (json.tables && json.tables.processList && Array.isArray(json.tables.processList.records)) ? json.tables.processList.records : [];
+            allTableRecords.normList = (json.tables && json.tables.normList && Array.isArray(json.tables.normList.records)) ? json.tables.normList.records : [];
+            allTableRecords.applicabilityList = (json.tables && json.tables.applicabilityList && Array.isArray(json.tables.applicabilityList.records)) ? json.tables.applicabilityList.records : [];
             if (json.records && Array.isArray(json.records)) {
               rawRecords = json.records;
+              processData(rawRecords);
+              resolve();
+            } else if (allTableRecords.main.length > 0) {
+              rawRecords = allTableRecords.main;
               processData(rawRecords);
               resolve();
             } else {
@@ -1088,10 +1329,31 @@
       const isFileProtocol = window.location.protocol === "file:";
 
       function handleData(json) {
+        allTableRecords.main = [];
+        allTableRecords.processList = [];
+        allTableRecords.normList = [];
+        allTableRecords.applicabilityList = [];
+        if (json.tables && json.tables.main && Array.isArray(json.tables.main.records)) {
+          allTableRecords.main = json.tables.main.records;
+        }
+        if (json.tables && json.tables.processList && Array.isArray(json.tables.processList.records)) {
+          allTableRecords.processList = json.tables.processList.records;
+        }
+        if (json.tables && json.tables.normList && Array.isArray(json.tables.normList.records)) {
+          allTableRecords.normList = json.tables.normList.records;
+        }
+        if (json.tables && json.tables.applicabilityList && Array.isArray(json.tables.applicabilityList.records)) {
+          allTableRecords.applicabilityList = json.tables.applicabilityList.records;
+        }
+
         if (json.records && Array.isArray(json.records)) {
           rawRecords = json.records;
-          processData(rawRecords);
-          isDataLoaded = true;
+          if (allTableRecords.main.length === 0) allTableRecords.main = json.records;
+        } else if (allTableRecords.main.length > 0) {
+          rawRecords = allTableRecords.main;
+        }
+        processData(rawRecords);
+        isDataLoaded = true;
 
           if (isRefresh) {
             // 刷新模式：保留现有布局，只更新数据
@@ -1121,31 +1383,19 @@
                   localStorage.setItem("dashboard-layout-v3", JSON.stringify(validLayout));
                 })
                 .catch(() => {
-                  // API 失败，尝试从静态 layout.json 加载（适用于 GitHub Pages 等静态托管）
-                  fetch("layout.json?_t=" + Date.now())
-                    .then(res => res.ok ? res.json() : Promise.reject())
-                    .then(layout => {
-                      console.log("从 layout.json 恢复布局:", layout.length, "个组件");
-                      const validLayout = validateLayout(layout);
-                      initGrid(validLayout);
-                      localStorage.setItem("dashboard-layout-v3", JSON.stringify(validLayout));
-                    })
-                    .catch(() => {
-                      const savedLayout = getLayoutHash();
-                      if (savedLayout && Array.isArray(savedLayout) && savedLayout.length > 0) {
-                        console.log("从 localStorage 恢复布局:", savedLayout.length, "个组件");
-                        initGrid(validateLayout(savedLayout));
-                      } else {
-                        console.log("使用默认布局");
-                        initGrid(defaultLayout);
-                      }
-                    });
+                  const savedLayout = getLayoutHash();
+                  if (savedLayout && Array.isArray(savedLayout) && savedLayout.length > 0) {
+                    console.log("从 localStorage 恢复布局:", savedLayout.length, "个组件");
+                    initGrid(validateLayout(savedLayout));
+                  } else {
+                    console.log("使用默认布局");
+                    initGrid(defaultLayout);
+                  }
                 });
             }
           }
           document.getElementById("lastUpdated").textContent = "数据更新：" + new Date().toLocaleString("zh-CN");
         }
-      }
 
 
       function fallbackInit() {
@@ -1158,21 +1408,12 @@
               localStorage.setItem("dashboard-layout-v3", JSON.stringify(layout));
             })
             .catch(() => {
-              // API 失败，尝试从静态 layout.json 加载
-              fetch("layout.json?_t=" + Date.now())
-                .then(res => res.ok ? res.json() : Promise.reject())
-                .then(layout => {
-                  initGrid(validateLayout(layout));
-                  localStorage.setItem("dashboard-layout-v3", JSON.stringify(layout));
-                })
-                .catch(() => {
-                  const savedLayout = getLayoutHash();
-                  if (savedLayout && Array.isArray(savedLayout)) {
-                    initGrid(validateLayout(savedLayout));
-                  } else {
-                    initGrid(defaultLayout);
-                  }
-                });
+              const savedLayout = getLayoutHash();
+              if (savedLayout && Array.isArray(savedLayout)) {
+                initGrid(validateLayout(savedLayout));
+              } else {
+                initGrid(defaultLayout);
+              }
             });
         }
       }
@@ -1215,28 +1456,17 @@
         });
     }
     document.addEventListener("DOMContentLoaded", function() {
-      // 先用内存数据初始化布局
       processData(rawRecords);
-
-      // 尝试从 layout.json 加载布局（适用于 GitHub Pages 等静态托管）
-      fetch("layout.json?_t=" + Date.now())
-        .then(res => res.ok ? res.json() : Promise.reject())
-        .then(layout => {
-          console.log("从 layout.json 初始化布局:", layout.length, "个组件");
-          initGrid(validateLayout(layout));
-        })
-        .catch(() => {
-          // layout.json 加载失败，尝试 localStorage 或默认布局
-          const savedLayout = getLayoutHash();
-          if (savedLayout && Array.isArray(savedLayout) && savedLayout.length > 0) {
-            initGrid(validateLayout(savedLayout));
-          } else {
-            initGrid(defaultLayout);
-          }
-        });
-
-      // 然后尝试加载最新的 data.json
-      loadExternalData(true);
+      const savedLayout = getLayoutHash();
+      if (savedLayout && Array.isArray(savedLayout) && savedLayout.length > 0) {
+        // localStorage 有布局：立即渲染，之后只刷新数据
+        initGrid(validateLayout(savedLayout));
+        loadExternalData(true);
+      } else {
+        // localStorage 为空（如清除浏览器）：让 loadExternalData 从服务器恢复布局
+        initGrid(defaultLayout);
+        loadExternalData(false);
+      }
 
       const now = new Date().toLocaleString("zh-CN");
       document.getElementById("lastUpdated").textContent = "数据更新：" + now;

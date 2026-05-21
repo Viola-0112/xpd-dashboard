@@ -1,0 +1,15 @@
+# Backups
+*.bak
+*_backup_*
+*_current*
+
+# Folders
+指标看板第一版/
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temp
+*.tmp
