@@ -1365,6 +1365,7 @@
             });
           } else {
             // 初次加载：优先从服务器恢复布局，失败则回退 localStorage
+            const hasExistingGrid = grid && grid.getGridItems().length > 0;
             if (window.location.search.includes("reset-layout=true")) {
               localStorage.removeItem("dashboard-layout-v3");
               fetch("/api/save-layout", {
@@ -1387,7 +1388,7 @@
                   if (savedLayout && Array.isArray(savedLayout) && savedLayout.length > 0) {
                     console.log("从 localStorage 恢复布局:", savedLayout.length, "个组件");
                     initGrid(validateLayout(savedLayout));
-                  } else {
+                  } else if (!hasExistingGrid) {
                     console.log("使用默认布局");
                     initGrid(defaultLayout);
                   }
@@ -1401,6 +1402,7 @@
       function fallbackInit() {
         if (!isRefresh) {
           isDataLoaded = true;
+          const hasExistingGrid = grid && grid.getGridItems().length > 0;
           fetch("/api/load-layout")
             .then(res => res.ok ? res.json() : Promise.reject())
             .then(layout => {
@@ -1411,7 +1413,7 @@
               const savedLayout = getLayoutHash();
               if (savedLayout && Array.isArray(savedLayout)) {
                 initGrid(validateLayout(savedLayout));
-              } else {
+              } else if (!hasExistingGrid) {
                 initGrid(defaultLayout);
               }
             });
