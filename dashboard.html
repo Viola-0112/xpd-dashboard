@@ -1389,8 +1389,19 @@
                     console.log("从 localStorage 恢复布局:", savedLayout.length, "个组件");
                     initGrid(validateLayout(savedLayout));
                   } else if (!hasExistingGrid) {
-                    console.log("使用默认布局");
-                    initGrid(defaultLayout);
+                    // 静态托管环境：尝试从 layout.json 恢复
+                    fetch("layout.json?_t=" + Date.now())
+                      .then(res => res.ok ? res.json() : Promise.reject())
+                      .then(layout => {
+                        console.log("从 layout.json 恢复布局:", layout.length, "个组件");
+                        const validLayout = validateLayout(layout);
+                        initGrid(validLayout);
+                        localStorage.setItem("dashboard-layout-v3", JSON.stringify(validLayout));
+                      })
+                      .catch(() => {
+                        console.log("使用默认布局");
+                        initGrid(defaultLayout);
+                      });
                   }
                 });
             }
@@ -1414,7 +1425,14 @@
               if (savedLayout && Array.isArray(savedLayout)) {
                 initGrid(validateLayout(savedLayout));
               } else if (!hasExistingGrid) {
-                initGrid(defaultLayout);
+                fetch("layout.json?_t=" + Date.now())
+                  .then(res => res.ok ? res.json() : Promise.reject())
+                  .then(layout => {
+                    const validLayout = validateLayout(layout);
+                    initGrid(validLayout);
+                    localStorage.setItem("dashboard-layout-v3", JSON.stringify(validLayout));
+                  })
+                  .catch(() => initGrid(defaultLayout));
               }
             });
         }
