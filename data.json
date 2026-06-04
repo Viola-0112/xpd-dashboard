@@ -2,7 +2,7 @@
   "title": "XPD指标概览",
   "source": "https://xiaopeng.feishu.cn/wiki/YVCSwf2mViezJwkXPN8c5LB7nVe",
   "baseToken": "Sudzb3xqza2Qnps1MGVcERUFnPh",
-  "updatedAt": "2026-05-21T08:47:28.822Z",
+  "updatedAt": "2026-06-04T08:04:47.054Z",
   "tables": {
     "main": {
       "name": "主要指标",
@@ -10,57 +10,57 @@
       "records": [
         {
           "category": "规范性指标",
-          "monthlyAchievement": "96.1%",
+          "monthlyAchievement": "95.54%",
           "monthlyTarget": "95%",
           "name": "交付规范性-G类",
           "remark": "",
           "formula": "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)",
           "total": "NA",
-          "achievementRate": 1.011578947
+          "achievementRate": 1.005684211
         },
         {
           "category": "规范性指标",
-          "monthlyAchievement": "91.7%",
+          "monthlyAchievement": "93.99%",
           "monthlyTarget": "90%",
           "name": "交付规范性-K类",
           "remark": "",
           "formula": "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)",
           "total": "NA",
-          "achievementRate": 1.018888889
+          "achievementRate": 1.044333333
         },
         {
           "category": "规范性指标",
-          "monthlyAchievement": "92.5%",
+          "monthlyAchievement": "95.96%",
           "monthlyTarget": "90%",
           "name": "交付规范性-P类",
           "remark": "",
           "formula": "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)",
           "total": "NA",
-          "achievementRate": 1.027777778
+          "achievementRate": 1.066222222
         },
         {
           "category": "规范性指标",
-          "monthlyAchievement": "85%",
+          "monthlyAchievement": "95.40%",
           "monthlyTarget": "85%",
           "name": "流程适用性-G类",
           "remark": "",
           "formula": "=1-不适用/(总数-进行中)",
           "total": "NA",
-          "achievementRate": 1
+          "achievementRate": 1.122352941
         },
         {
           "category": "规范性指标",
-          "monthlyAchievement": "70%",
+          "monthlyAchievement": "79.45%",
           "monthlyTarget": "75%",
           "name": "流程适用性-K类",
           "remark": "",
           "formula": "=1-不适用/(总数-进行中)",
           "total": "NA",
-          "achievementRate": 0.933333333
+          "achievementRate": 1.059333333
         },
         {
           "category": "规范性指标",
-          "monthlyAchievement": "40",
+          "monthlyAchievement": "NA",
           "monthlyTarget": "NA",
           "name": "AI检核交付质量-G类",
           "remark": "*试运行期间暂无目标值",
@@ -100,32 +100,32 @@
         },
         {
           "category": "基础信息",
-          "monthlyAchievement": "25",
+          "monthlyAchievement": "26",
           "monthlyTarget": "NA",
           "name": "XPD项目",
           "remark": "",
           "formula": "本月监控&年度累计",
-          "total": "50",
+          "total": "38",
           "achievementRate": null
         },
         {
           "category": "基础信息",
-          "monthlyAchievement": "3000",
+          "monthlyAchievement": "2410",
           "monthlyTarget": "NA",
           "name": "XPD任务",
           "remark": "",
           "formula": "本月监控&年度累计",
-          "total": "1.2W",
+          "total": "9056",
           "achievementRate": null
         },
         {
           "category": "系统访问量",
-          "monthlyAchievement": "20W",
+          "monthlyAchievement": "27W",
           "monthlyTarget": "NA",
           "name": "XPD系统",
           "remark": "",
           "formula": "本月&年度累计",
-          "total": "80W",
+          "total": "86W",
           "achievementRate": null
         },
         {
@@ -160,12 +160,12 @@
         },
         {
           "category": "基础信息",
-          "monthlyAchievement": "200",
+          "monthlyAchievement": "3484",
           "monthlyTarget": "NA",
           "name": "XPD知识沉淀",
           "remark": "",
           "formula": "本月新增&文档总数",
-          "total": "1.3W",
+          "total": "11.3W",
           "achievementRate": null
         },
         {
@@ -180,13 +180,13 @@
         },
         {
           "category": "组织及文化建设",
-          "monthlyAchievement": "90%",
+          "monthlyAchievement": "NA",
           "monthlyTarget": "85%",
           "name": "流程问题管理",
           "remark": "",
           "formula": "=1-延期未完成/问题总数",
           "total": "NA",
-          "achievementRate": 1.058823529
+          "achievementRate": null
         }
       ]
     },
@@ -194,18 +194,6 @@
       "name": "流程清单",
       "tableId": "tblubcfi5BnghWwO",
       "records": [
-        {
-          "层级": "L1",
-          "名称": "XPD-产品开发",
-          "编号": "2",
-          "审批发布完成时间": "2025-12-31 12:09:00",
-          "流程状态": "已发布",
-          "当月发布": "",
-          "路径": "小鹏汽车",
-          "适用范围": "国内,海外",
-          "类型": "架构",
-          "版本号": "2.5"
-        },
         {
           "层级": "L2",
           "名称": "需求管理",
@@ -1640,7 +1628,7 @@
           "编号": "2.7.7.3",
           "审批发布完成时间": "2026-05-14 13:55:00",
           "流程状态": "已发布",
-          "当月发布": "",
+          "当月发布": "是",
           "路径": "小鹏汽车-XPD-产品开发-硬件开发与仿真分析-仿真分析",
           "适用范围": "国内,海外",
           "类型": "流程",
@@ -2000,7 +1988,7 @@
           "编号": "2.10.1.1",
           "审批发布完成时间": "2026-05-12 13:32:00",
           "流程状态": "已发布",
-          "当月发布": "",
+          "当月发布": "是",
           "路径": "小鹏汽车-XPD-产品开发-自动驾驶自研开发-自动驾驶系统架构开发",
           "适用范围": "国内,海外",
           "类型": "流程",
@@ -2252,7 +2240,7 @@
           "编号": "2.11.1.4",
           "审批发布完成时间": "2026-05-06 16:01:00",
           "流程状态": "已发布",
-          "当月发布": "",
+          "当月发布": "是",
           "路径": "小鹏汽车-XPD-产品开发-动力系统开发-电池系统开发",
           "适用范围": "国内,海外",
           "类型": "流程",
@@ -2324,7 +2312,7 @@
           "编号": "2.11.2.3",
           "审批发布完成时间": "2026-05-07 18:15:00",
           "流程状态": "已发布",
-          "当月发布": "",
+          "当月发布": "是",
           "路径": "小鹏汽车-XPD-产品开发-动力系统开发-电驱系统开发",
           "适用范围": "国内,海外",
           "类型": "流程",
@@ -2336,7 +2324,7 @@
           "编号": "2.11.2.4",
           "审批发布完成时间": "2026-05-06 09:58:00",
           "流程状态": "已发布",
-          "当月发布": "",
+          "当月发布": "是",
           "路径": "小鹏汽车-XPD-产品开发-动力系统开发-电驱系统开发",
           "适用范围": "国内,海外",
           "类型": "流程",
@@ -2420,7 +2408,7 @@
           "编号": "2.11.3.5",
           "审批发布完成时间": "2026-05-08 15:59:00",
           "流程状态": "已发布",
-          "当月发布": "",
+          "当月发布": "是",
           "路径": "小鹏汽车-XPD-产品开发-动力系统开发-超级电动系统开发",
           "适用范围": "国内,海外",
           "类型": "流程",
@@ -2516,7 +2504,7 @@
           "编号": "2.11.11.1",
           "审批发布完成时间": "2026-05-06 13:52:00",
           "流程状态": "已发布",
-          "当月发布": "",
+          "当月发布": "是",
           "路径": "小鹏汽车-XPD-产品开发-动力系统开发-动力功能安全开发",
           "适用范围": "国内,海外",
           "类型": "流程",
@@ -2540,7 +2528,7 @@
           "编号": "2.11.12.1",
           "审批发布完成时间": "2026-05-20 09:55:00",
           "流程状态": "已发布",
-          "当月发布": "",
+          "当月发布": "是",
           "路径": "小鹏汽车-XPD-产品开发-动力系统开发-功率系统总成开发",
           "适用范围": "国内,海外",
           "类型": "流程",
@@ -2593,6 +2581,18 @@
           "适用范围": "国内,海外",
           "类型": "流程",
           "版本号": "2.1"
+        },
+        {
+          "层级": "L4",
+          "名称": "功率系统工艺开发流程",
+          "编号": "2.11.12.6",
+          "审批发布完成时间": "2026-01-28 17:20:00",
+          "流程状态": "已发布",
+          "当月发布": "",
+          "路径": "小鹏汽车-XPD-产品开发-动力系统开发-功率系统总成开发",
+          "适用范围": "国内,海外",
+          "类型": "流程",
+          "版本号": "2.4"
         }
       ]
     },
@@ -3342,57 +3342,57 @@
   "records": [
     {
       "category": "规范性指标",
-      "monthlyAchievement": "96.1%",
+      "monthlyAchievement": "95.54%",
       "monthlyTarget": "95%",
       "name": "交付规范性-G类",
       "remark": "",
       "formula": "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)",
       "total": "NA",
-      "achievementRate": 1.011578947
+      "achievementRate": 1.005684211
     },
     {
       "category": "规范性指标",
-      "monthlyAchievement": "91.7%",
+      "monthlyAchievement": "93.99%",
       "monthlyTarget": "90%",
       "name": "交付规范性-K类",
       "remark": "",
       "formula": "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)",
       "total": "NA",
-      "achievementRate": 1.018888889
+      "achievementRate": 1.044333333
     },
     {
       "category": "规范性指标",
-      "monthlyAchievement": "92.5%",
+      "monthlyAchievement": "95.96%",
       "monthlyTarget": "90%",
       "name": "交付规范性-P类",
       "remark": "",
       "formula": "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)",
       "total": "NA",
-      "achievementRate": 1.027777778
+      "achievementRate": 1.066222222
     },
     {
       "category": "规范性指标",
-      "monthlyAchievement": "85%",
+      "monthlyAchievement": "95.40%",
       "monthlyTarget": "85%",
       "name": "流程适用性-G类",
       "remark": "",
       "formula": "=1-不适用/(总数-进行中)",
       "total": "NA",
-      "achievementRate": 1
+      "achievementRate": 1.122352941
     },
     {
       "category": "规范性指标",
-      "monthlyAchievement": "70%",
+      "monthlyAchievement": "79.45%",
       "monthlyTarget": "75%",
       "name": "流程适用性-K类",
       "remark": "",
       "formula": "=1-不适用/(总数-进行中)",
       "total": "NA",
-      "achievementRate": 0.933333333
+      "achievementRate": 1.059333333
     },
     {
       "category": "规范性指标",
-      "monthlyAchievement": "40",
+      "monthlyAchievement": "NA",
       "monthlyTarget": "NA",
       "name": "AI检核交付质量-G类",
       "remark": "*试运行期间暂无目标值",
@@ -3432,32 +3432,32 @@
     },
     {
       "category": "基础信息",
-      "monthlyAchievement": "25",
+      "monthlyAchievement": "26",
       "monthlyTarget": "NA",
       "name": "XPD项目",
       "remark": "",
       "formula": "本月监控&年度累计",
-      "total": "50",
+      "total": "38",
       "achievementRate": null
     },
     {
       "category": "基础信息",
-      "monthlyAchievement": "3000",
+      "monthlyAchievement": "2410",
       "monthlyTarget": "NA",
       "name": "XPD任务",
       "remark": "",
       "formula": "本月监控&年度累计",
-      "total": "1.2W",
+      "total": "9056",
       "achievementRate": null
     },
     {
       "category": "系统访问量",
-      "monthlyAchievement": "20W",
+      "monthlyAchievement": "27W",
       "monthlyTarget": "NA",
       "name": "XPD系统",
       "remark": "",
       "formula": "本月&年度累计",
-      "total": "80W",
+      "total": "86W",
       "achievementRate": null
     },
     {
@@ -3492,12 +3492,12 @@
     },
     {
       "category": "基础信息",
-      "monthlyAchievement": "200",
+      "monthlyAchievement": "3484",
       "monthlyTarget": "NA",
       "name": "XPD知识沉淀",
       "remark": "",
       "formula": "本月新增&文档总数",
-      "total": "1.3W",
+      "total": "11.3W",
       "achievementRate": null
     },
     {
@@ -3512,13 +3512,13 @@
     },
     {
       "category": "组织及文化建设",
-      "monthlyAchievement": "90%",
+      "monthlyAchievement": "NA",
       "monthlyTarget": "85%",
       "name": "流程问题管理",
       "remark": "",
       "formula": "=1-延期未完成/问题总数",
       "total": "NA",
-      "achievementRate": 1.058823529
+      "achievementRate": null
     }
   ]
 }
