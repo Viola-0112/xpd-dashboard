@@ -2,7 +2,7 @@
   "title": "XPD指标概览",
   "source": "https://xiaopeng.feishu.cn/wiki/YVCSwf2mViezJwkXPN8c5LB7nVe",
   "baseToken": "Sudzb3xqza2Qnps1MGVcERUFnPh",
-  "updatedAt": "2026-06-05T09:50:17.355Z",
+  "updatedAt": "2026-06-05T09:57:44.768Z",
   "tables": {
     "main": {
       "name": "主要指标",
@@ -105,7 +105,7 @@
           "name": "XPD项目",
           "remark": "",
           "formula": "本月监控&累计",
-          "total": "39",
+          "total": "51",
           "achievementRate": null
         },
         {
@@ -115,7 +115,7 @@
           "name": "XPD任务",
           "remark": "",
           "formula": "本月监控&累计",
-          "total": "9042",
+          "total": "3.1W",
           "achievementRate": null
         },
         {
@@ -144,7 +144,7 @@
           "monthlyTarget": "NA",
           "name": "浩瀚知识库",
           "remark": "",
-          "formula": "本月&年度累计",
+          "formula": "本月&累计",
           "total": "2W",
           "achievementRate": null
         },
@@ -165,7 +165,7 @@
           "name": "XPD知识沉淀",
           "remark": "",
           "formula": "本月新增&文档总数",
-          "total": "1.8W",
+          "total": "11.3W",
           "achievementRate": null
         },
         {
@@ -3437,7 +3437,7 @@
       "name": "XPD项目",
       "remark": "",
       "formula": "本月监控&累计",
-      "total": "39",
+      "total": "51",
       "achievementRate": null
     },
     {
@@ -3447,7 +3447,7 @@
       "name": "XPD任务",
       "remark": "",
       "formula": "本月监控&累计",
-      "total": "9042",
+      "total": "3.1W",
       "achievementRate": null
     },
     {
@@ -3476,7 +3476,7 @@
       "monthlyTarget": "NA",
       "name": "浩瀚知识库",
       "remark": "",
-      "formula": "本月&年度累计",
+      "formula": "本月&累计",
       "total": "2W",
       "achievementRate": null
     },
@@ -3497,7 +3497,7 @@
       "name": "XPD知识沉淀",
       "remark": "",
       "formula": "本月新增&文档总数",
-      "total": "1.8W",
+      "total": "11.3W",
       "achievementRate": null
     },
     {
