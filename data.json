@@ -2,7 +2,7 @@
   "title": "XPD指标概览",
   "source": "https://xiaopeng.feishu.cn/wiki/YVCSwf2mViezJwkXPN8c5LB7nVe",
   "baseToken": "Sudzb3xqza2Qnps1MGVcERUFnPh",
-  "updatedAt": "2026-06-04T08:04:47.054Z",
+  "updatedAt": "2026-06-05T09:46:11.616Z",
   "tables": {
     "main": {
       "name": "主要指标",
@@ -104,18 +104,18 @@
           "monthlyTarget": "NA",
           "name": "XPD项目",
           "remark": "",
-          "formula": "本月监控&年度累计",
-          "total": "38",
+          "formula": "本月监控&累计",
+          "total": "51",
           "achievementRate": null
         },
         {
           "category": "基础信息",
-          "monthlyAchievement": "2410",
+          "monthlyAchievement": "2407",
           "monthlyTarget": "NA",
           "name": "XPD任务",
           "remark": "",
-          "formula": "本月监控&年度累计",
-          "total": "9056",
+          "formula": "本月监控&累计",
+          "total": "3.1W",
           "achievementRate": null
         },
         {
@@ -124,8 +124,8 @@
           "monthlyTarget": "NA",
           "name": "XPD系统",
           "remark": "",
-          "formula": "本月&年度累计",
-          "total": "86W",
+          "formula": "本月&累计",
+          "total": "87W",
           "achievementRate": null
         },
         {
@@ -140,12 +140,12 @@
         },
         {
           "category": "系统访问量",
-          "monthlyAchievement": "3000",
+          "monthlyAchievement": "7439",
           "monthlyTarget": "NA",
           "name": "浩瀚知识库",
           "remark": "",
-          "formula": "本月&年度累计",
-          "total": "1W",
+          "formula": "本月&累计",
+          "total": "2W",
           "achievementRate": null
         },
         {
@@ -3436,18 +3436,18 @@
       "monthlyTarget": "NA",
       "name": "XPD项目",
       "remark": "",
-      "formula": "本月监控&年度累计",
-      "total": "38",
+      "formula": "本月监控&累计",
+      "total": "51",
       "achievementRate": null
     },
     {
       "category": "基础信息",
-      "monthlyAchievement": "2410",
+      "monthlyAchievement": "2407",
       "monthlyTarget": "NA",
       "name": "XPD任务",
       "remark": "",
-      "formula": "本月监控&年度累计",
-      "total": "9056",
+      "formula": "本月监控&累计",
+      "total": "3.1W",
       "achievementRate": null
     },
     {
@@ -3456,8 +3456,8 @@
       "monthlyTarget": "NA",
       "name": "XPD系统",
       "remark": "",
-      "formula": "本月&年度累计",
-      "total": "86W",
+      "formula": "本月&累计",
+      "total": "87W",
       "achievementRate": null
     },
     {
@@ -3472,12 +3472,12 @@
     },
     {
       "category": "系统访问量",
-      "monthlyAchievement": "3000",
+      "monthlyAchievement": "7439",
       "monthlyTarget": "NA",
       "name": "浩瀚知识库",
       "remark": "",
-      "formula": "本月&年度累计",
-      "total": "1W",
+      "formula": "本月&累计",
+      "total": "2W",
       "achievementRate": null
     },
     {
