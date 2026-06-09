@@ -2,7 +2,7 @@
   "title": "XPD指标概览",
   "source": "https://xiaopeng.feishu.cn/wiki/YVCSwf2mViezJwkXPN8c5LB7nVe",
   "baseToken": "Sudzb3xqza2Qnps1MGVcERUFnPh",
-  "updatedAt": "2026-06-09T07:14:26.760Z",
+  "updatedAt": "2026-06-09T08:10:14.949Z",
   "tables": {
     "main": {
       "name": "主要指标",
@@ -40,27 +40,27 @@
         },
         {
           "category": "规范性指标",
-          "monthlyAchievement": "95.40%",
+          "monthlyAchievement": "91.0%",
           "monthlyTarget": "85%",
           "name": "流程适用性-G类",
           "remark": "",
           "formula": "=1-不适用/(总数-进行中)",
           "total": "NA",
-          "achievementRate": 1.122352941
+          "achievementRate": 1.070588235
         },
         {
           "category": "规范性指标",
-          "monthlyAchievement": "79.45%",
+          "monthlyAchievement": "65.7%",
           "monthlyTarget": "75%",
           "name": "流程适用性-K类",
           "remark": "",
           "formula": "=1-不适用/(总数-进行中)",
           "total": "NA",
-          "achievementRate": 1.059333333
+          "achievementRate": 0.876
         },
         {
           "category": "规范性指标",
-          "monthlyAchievement": "NA",
+          "monthlyAchievement": "45.58",
           "monthlyTarget": "NA",
           "name": "AI检核交付质量-G类",
           "remark": "*试运行期间暂无目标值",
@@ -70,7 +70,7 @@
         },
         {
           "category": "规范性指标",
-          "monthlyAchievement": "NA",
+          "monthlyAchievement": "66.79",
           "monthlyTarget": "NA",
           "name": "AI检核交付质量-K类",
           "remark": "",
@@ -144,7 +144,7 @@
           "monthlyTarget": "NA",
           "name": "浩瀚知识库",
           "remark": "",
-          "formula": "本月&累计",
+          "formula": "本月&年度累计",
           "total": "2W",
           "achievementRate": null
         },
@@ -3372,27 +3372,27 @@
     },
     {
       "category": "规范性指标",
-      "monthlyAchievement": "95.40%",
+      "monthlyAchievement": "91.0%",
       "monthlyTarget": "85%",
       "name": "流程适用性-G类",
       "remark": "",
       "formula": "=1-不适用/(总数-进行中)",
       "total": "NA",
-      "achievementRate": 1.122352941
+      "achievementRate": 1.070588235
     },
     {
       "category": "规范性指标",
-      "monthlyAchievement": "79.45%",
+      "monthlyAchievement": "65.7%",
       "monthlyTarget": "75%",
       "name": "流程适用性-K类",
       "remark": "",
       "formula": "=1-不适用/(总数-进行中)",
       "total": "NA",
-      "achievementRate": 1.059333333
+      "achievementRate": 0.876
     },
     {
       "category": "规范性指标",
-      "monthlyAchievement": "NA",
+      "monthlyAchievement": "45.58",
       "monthlyTarget": "NA",
       "name": "AI检核交付质量-G类",
       "remark": "*试运行期间暂无目标值",
@@ -3402,7 +3402,7 @@
     },
     {
       "category": "规范性指标",
-      "monthlyAchievement": "NA",
+      "monthlyAchievement": "66.79",
       "monthlyTarget": "NA",
       "name": "AI检核交付质量-K类",
       "remark": "",
@@ -3476,7 +3476,7 @@
       "monthlyTarget": "NA",
       "name": "浩瀚知识库",
       "remark": "",
-      "formula": "本月&累计",
+      "formula": "本月&年度累计",
       "total": "2W",
       "achievementRate": null
     },
