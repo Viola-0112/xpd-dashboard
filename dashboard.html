@@ -558,9 +558,9 @@
             ctx.stroke();
             ctx.setLineDash([]);
 
-            // 在达成值柱子中间画一个小圆点
+            // 在水平线末端画一个小圆点
             ctx.beginPath();
-            ctx.arc(achievementX, achievementY, 4, 0, Math.PI * 2);
+            ctx.arc(achievementX, targetY, 4, 0, Math.PI * 2);
             ctx.fillStyle = lineColor;
             ctx.fill();
           }
