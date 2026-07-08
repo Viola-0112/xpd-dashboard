@@ -548,20 +548,21 @@
             // 线条颜色：达成 > 目标为绿色，否则为红色
             const lineColor = achievementVal >= targetVal ? "#22c55e" : "#ef4444";
 
+            // 绘制水平线：从目标值顶部高度水平延伸到达成值柱子
             ctx.beginPath();
             ctx.moveTo(targetX, targetY);
-            ctx.lineTo(achievementX, achievementY);
+            ctx.lineTo(achievementX, targetY);
             ctx.strokeStyle = lineColor;
             ctx.lineWidth = 2;
             ctx.setLineDash([4, 3]);
             ctx.stroke();
+            ctx.setLineDash([]);
 
             // 在达成值柱子中间画一个小圆点
             ctx.beginPath();
             ctx.arc(achievementX, achievementY, 4, 0, Math.PI * 2);
             ctx.fillStyle = lineColor;
             ctx.fill();
-            ctx.setLineDash([]);
           }
           ctx.restore();
         }
