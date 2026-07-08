@@ -57,7 +57,7 @@ function parseMainRecords(rawRecords) {
     }
     return {
       category: row["分类"] || "",
-      monthlyAchievement: row["月度达成"] || "",
+      monthlyAchievement: row["月度实际"] || "",
       monthlyTarget: row["月度目标"] || "",
       name: row["指标名称"] || "",
       remark: row["备注"] || "",

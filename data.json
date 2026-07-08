@@ -2,7 +2,7 @@
   "title": "XPD指标概览",
   "source": "https://xiaopeng.feishu.cn/wiki/YVCSwf2mViezJwkXPN8c5LB7nVe",
   "baseToken": "Sudzb3xqza2Qnps1MGVcERUFnPh",
-  "updatedAt": "2026-07-08T10:17:44.312Z",
+  "updatedAt": "2026-07-08T10:23:52.138Z",
   "tables": {
     "main": {
       "name": "主要指标",
@@ -10,7 +10,7 @@
       "records": [
         {
           "category": "规范性指标",
-          "monthlyAchievement": "",
+          "monthlyAchievement": "98%",
           "monthlyTarget": "95%",
           "name": "交付规范性-G类",
           "remark": "",
@@ -20,7 +20,7 @@
         },
         {
           "category": "规范性指标",
-          "monthlyAchievement": "",
+          "monthlyAchievement": "92.3%",
           "monthlyTarget": "90%",
           "name": "交付规范性-K类",
           "remark": "",
@@ -30,7 +30,7 @@
         },
         {
           "category": "规范性指标",
-          "monthlyAchievement": "",
+          "monthlyAchievement": "96.8%",
           "monthlyTarget": "90%",
           "name": "交付规范性-P类",
           "remark": "",
@@ -40,7 +40,7 @@
         },
         {
           "category": "规范性指标",
-          "monthlyAchievement": "",
+          "monthlyAchievement": "89.8%",
           "monthlyTarget": "85%",
           "name": "流程适用性-G类",
           "remark": "",
@@ -50,7 +50,7 @@
         },
         {
           "category": "规范性指标",
-          "monthlyAchievement": "",
+          "monthlyAchievement": "76.2%",
           "monthlyTarget": "75%",
           "name": "流程适用性-K类",
           "remark": "",
@@ -60,7 +60,7 @@
         },
         {
           "category": "规范性指标",
-          "monthlyAchievement": "",
+          "monthlyAchievement": "83.11",
           "monthlyTarget": "NA",
           "name": "AI检核交付质量-G类",
           "remark": "*试运行期间暂无目标值",
@@ -70,7 +70,7 @@
         },
         {
           "category": "规范性指标",
-          "monthlyAchievement": "",
+          "monthlyAchievement": "40.48",
           "monthlyTarget": "NA",
           "name": "AI检核交付质量-K类",
           "remark": "",
@@ -80,7 +80,7 @@
         },
         {
           "category": "组织及文化建设",
-          "monthlyAchievement": "",
+          "monthlyAchievement": "5",
           "monthlyTarget": "5",
           "name": "流程培训场次",
           "remark": "",
@@ -90,7 +90,7 @@
         },
         {
           "category": "组织及文化建设",
-          "monthlyAchievement": "",
+          "monthlyAchievement": "8.43",
           "monthlyTarget": "8.4",
           "name": "流程满意度",
           "remark": "*06/26调研结果",
@@ -100,7 +100,7 @@
         },
         {
           "category": "基础信息",
-          "monthlyAchievement": "",
+          "monthlyAchievement": "23",
           "monthlyTarget": "NA",
           "name": "XPD项目",
           "remark": "",
@@ -110,7 +110,7 @@
         },
         {
           "category": "基础信息",
-          "monthlyAchievement": "",
+          "monthlyAchievement": "747",
           "monthlyTarget": "NA",
           "name": "XPD任务",
           "remark": "",
@@ -120,7 +120,7 @@
         },
         {
           "category": "系统访问量",
-          "monthlyAchievement": "",
+          "monthlyAchievement": "35W",
           "monthlyTarget": "NA",
           "name": "XPD系统",
           "remark": "",
@@ -130,7 +130,7 @@
         },
         {
           "category": "基础信息",
-          "monthlyAchievement": "",
+          "monthlyAchievement": "1",
           "monthlyTarget": "NA",
           "name": "XPD架构发布（L2&L3）",
           "remark": "",
@@ -140,7 +140,7 @@
         },
         {
           "category": "系统访问量",
-          "monthlyAchievement": "",
+          "monthlyAchievement": "8043",
           "monthlyTarget": "NA",
           "name": "浩瀚知识库",
           "remark": "",
@@ -150,7 +150,7 @@
         },
         {
           "category": "基础信息",
-          "monthlyAchievement": "",
+          "monthlyAchievement": "39",
           "monthlyTarget": "NA",
           "name": "XPD流程发布（L4）",
           "remark": "",
@@ -160,7 +160,7 @@
         },
         {
           "category": "基础信息",
-          "monthlyAchievement": "",
+          "monthlyAchievement": "2.9W",
           "monthlyTarget": "NA",
           "name": "XPD知识沉淀",
           "remark": "",
@@ -170,7 +170,7 @@
         },
         {
           "category": "组织及文化建设",
-          "monthlyAchievement": "",
+          "monthlyAchievement": "1",
           "monthlyTarget": "1",
           "name": "流程委员会运营",
           "remark": "",
@@ -180,7 +180,7 @@
         },
         {
           "category": "组织及文化建设",
-          "monthlyAchievement": "",
+          "monthlyAchievement": "NA",
           "monthlyTarget": "85%",
           "name": "流程问题管理",
           "remark": "",
@@ -3342,7 +3342,7 @@
   "records": [
     {
       "category": "规范性指标",
-      "monthlyAchievement": "",
+      "monthlyAchievement": "98%",
       "monthlyTarget": "95%",
       "name": "交付规范性-G类",
       "remark": "",
@@ -3352,7 +3352,7 @@
     },
     {
       "category": "规范性指标",
-      "monthlyAchievement": "",
+      "monthlyAchievement": "92.3%",
       "monthlyTarget": "90%",
       "name": "交付规范性-K类",
       "remark": "",
@@ -3362,7 +3362,7 @@
     },
     {
       "category": "规范性指标",
-      "monthlyAchievement": "",
+      "monthlyAchievement": "96.8%",
       "monthlyTarget": "90%",
       "name": "交付规范性-P类",
       "remark": "",
@@ -3372,7 +3372,7 @@
     },
     {
       "category": "规范性指标",
-      "monthlyAchievement": "",
+      "monthlyAchievement": "89.8%",
       "monthlyTarget": "85%",
       "name": "流程适用性-G类",
       "remark": "",
@@ -3382,7 +3382,7 @@
     },
     {
       "category": "规范性指标",
-      "monthlyAchievement": "",
+      "monthlyAchievement": "76.2%",
       "monthlyTarget": "75%",
       "name": "流程适用性-K类",
       "remark": "",
@@ -3392,7 +3392,7 @@
     },
     {
       "category": "规范性指标",
-      "monthlyAchievement": "",
+      "monthlyAchievement": "83.11",
       "monthlyTarget": "NA",
       "name": "AI检核交付质量-G类",
       "remark": "*试运行期间暂无目标值",
@@ -3402,7 +3402,7 @@
     },
     {
       "category": "规范性指标",
-      "monthlyAchievement": "",
+      "monthlyAchievement": "40.48",
       "monthlyTarget": "NA",
       "name": "AI检核交付质量-K类",
       "remark": "",
@@ -3412,7 +3412,7 @@
     },
     {
       "category": "组织及文化建设",
-      "monthlyAchievement": "",
+      "monthlyAchievement": "5",
       "monthlyTarget": "5",
       "name": "流程培训场次",
       "remark": "",
@@ -3422,7 +3422,7 @@
     },
     {
       "category": "组织及文化建设",
-      "monthlyAchievement": "",
+      "monthlyAchievement": "8.43",
       "monthlyTarget": "8.4",
       "name": "流程满意度",
       "remark": "*06/26调研结果",
@@ -3432,7 +3432,7 @@
     },
     {
       "category": "基础信息",
-      "monthlyAchievement": "",
+      "monthlyAchievement": "23",
       "monthlyTarget": "NA",
       "name": "XPD项目",
       "remark": "",
@@ -3442,7 +3442,7 @@
     },
     {
       "category": "基础信息",
-      "monthlyAchievement": "",
+      "monthlyAchievement": "747",
       "monthlyTarget": "NA",
       "name": "XPD任务",
       "remark": "",
@@ -3452,7 +3452,7 @@
     },
     {
       "category": "系统访问量",
-      "monthlyAchievement": "",
+      "monthlyAchievement": "35W",
       "monthlyTarget": "NA",
       "name": "XPD系统",
       "remark": "",
@@ -3462,7 +3462,7 @@
     },
     {
       "category": "基础信息",
-      "monthlyAchievement": "",
+      "monthlyAchievement": "1",
       "monthlyTarget": "NA",
       "name": "XPD架构发布（L2&L3）",
       "remark": "",
@@ -3472,7 +3472,7 @@
     },
     {
       "category": "系统访问量",
-      "monthlyAchievement": "",
+      "monthlyAchievement": "8043",
       "monthlyTarget": "NA",
       "name": "浩瀚知识库",
       "remark": "",
@@ -3482,7 +3482,7 @@
     },
     {
       "category": "基础信息",
-      "monthlyAchievement": "",
+      "monthlyAchievement": "39",
       "monthlyTarget": "NA",
       "name": "XPD流程发布（L4）",
       "remark": "",
@@ -3492,7 +3492,7 @@
     },
     {
       "category": "基础信息",
-      "monthlyAchievement": "",
+      "monthlyAchievement": "2.9W",
       "monthlyTarget": "NA",
       "name": "XPD知识沉淀",
       "remark": "",
@@ -3502,7 +3502,7 @@
     },
     {
       "category": "组织及文化建设",
-      "monthlyAchievement": "",
+      "monthlyAchievement": "1",
       "monthlyTarget": "1",
       "name": "流程委员会运营",
       "remark": "",
@@ -3512,7 +3512,7 @@
     },
     {
       "category": "组织及文化建设",
-      "monthlyAchievement": "",
+      "monthlyAchievement": "NA",
       "monthlyTarget": "85%",
       "name": "流程问题管理",
       "remark": "",
