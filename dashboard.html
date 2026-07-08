@@ -499,7 +499,7 @@
           });
         }
         datasets.push({
-          label: "月度达成", data: data.map(r => r.achievementNum),
+          label: "月度实际", data: data.map(r => r.achievementNum),
           backgroundColor: cfg.chartType === "line" ? "rgba(59,130,246,0.1)" : achievementColors,
           borderColor: cfg.chartType === "line" ? "#3b82f6" : achievementColors,
           borderWidth: 2, borderRadius: 4, barPercentage: 0.5,
@@ -684,7 +684,7 @@
       let filename = "";
 
       if (dataSource === "main") {
-        csv = [["分类", "指标名称", "月度达成", "月度目标", "达成率", "总数", "公式说明"], ...indicators.map(r => [r.category, r.name, r.monthlyAchievement, r.monthlyTarget, formatRate(r.rateNum), r.total, r.formula])].map(row => row.join(",")).join("\n");
+        csv = [["分类", "指标名称", "月度实际", "月度目标", "达成率", "总数", "公式说明"], ...indicators.map(r => [r.category, r.name, r.monthlyAchievement, r.monthlyTarget, formatRate(r.rateNum), r.total, r.formula])].map(row => row.join(",")).join("\n");
         filename = "指标明细_" + new Date().toISOString().slice(0, 10) + ".csv";
       } else {
         const records = allTableRecords[dataSource] || [];
@@ -844,7 +844,7 @@
       const catOptions = categories.map(c => `<option value="${c}" ${cfg.filterCategory === c ? "selected" : ""}>${c}</option>`).join("");
       const allNames = [...new Set(indicators.map(r => r.name))];
       const fieldOptions = [
-        { v: "monthlyAchievement", l: "月度达成" },
+        { v: "monthlyAchievement", l: "月度实际" },
         { v: "monthlyTarget", l: "月度目标" },
         { v: "total", l: "总数" },
         { v: "achievementRate", l: "达成率" }
