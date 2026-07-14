@@ -534,7 +534,7 @@
           if (!meta0) return;
 
           ctx.save();
-          ctx.font = `${bs}px sans-serif`;
+          ctx.font = `bold ${bs}px sans-serif`;
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
 
@@ -551,38 +551,42 @@
 
               const targetVal = targetDataset.data[i];
               const achievementVal = achievementDataset.data[i];
-              if (targetVal === null || achievementVal === null) continue;
 
-              const targetX = targetBar.x;
-              const targetY = targetBar.y;
-              const achievementX = achievementBar.x;
-              const achievementY = (achievementBar.y + achievementBar.base) / 2;
+              // 绘制水平连接线（仅当目标值存在时）
+              if (targetVal !== null && achievementVal !== null) {
+                const targetX = targetBar.x;
+                const targetY = targetBar.y;
+                const achievementX = achievementBar.x;
 
-              // 绘制水平连接线
-              const lineColor = achievementVal >= targetVal ? "#22c55e" : "#ef4444";
-              ctx.beginPath();
-              ctx.moveTo(targetX, targetY);
-              ctx.lineTo(achievementX, targetY);
-              ctx.strokeStyle = lineColor;
-              ctx.lineWidth = 2;
-              ctx.setLineDash([4, 3]);
-              ctx.stroke();
-              ctx.setLineDash([]);
+                const lineColor = achievementVal >= targetVal ? "#22c55e" : "#ef4444";
+                ctx.beginPath();
+                ctx.moveTo(targetX, targetY);
+                ctx.lineTo(achievementX, targetY);
+                ctx.strokeStyle = lineColor;
+                ctx.lineWidth = 2;
+                ctx.setLineDash([4, 3]);
+                ctx.stroke();
+                ctx.setLineDash([]);
 
-              // 在水平线末端画一个小圆点
-              ctx.beginPath();
-              ctx.arc(achievementX, targetY, 4, 0, Math.PI * 2);
-              ctx.fillStyle = lineColor;
-              ctx.fill();
+                // 在水平线末端画一个小圆点
+                ctx.beginPath();
+                ctx.arc(achievementX, targetY, 4, 0, Math.PI * 2);
+                ctx.fillStyle = lineColor;
+                ctx.fill();
 
-              // 目标值柱子居中标签
-              const targetCenterY = (targetBar.y + targetBar.base) / 2;
-              ctx.fillStyle = "#ffffff";
-              ctx.fillText(targetVal + (usePercent ? "%" : ""), targetX, targetCenterY);
+                // 目标值柱子居中标签
+                const targetCenterY = (targetBar.y + targetBar.base) / 2;
+                ctx.fillStyle = "#000000";
+                ctx.fillText(targetVal + (usePercent ? "%" : ""), targetX, targetCenterY);
+              }
 
-              // 达成值柱子居中标签
-              ctx.fillStyle = achievementVal >= targetVal ? "#ffffff" : "#ffffff";
-              ctx.fillText(achievementVal + (usePercent ? "%" : ""), achievementX, achievementY);
+              // 达成值柱子居中标签（始终显示）
+              if (achievementVal !== null) {
+                const achievementX = achievementBar.x;
+                const achievementY = (achievementBar.y + achievementBar.base) / 2;
+                ctx.fillStyle = "#000000";
+                ctx.fillText(achievementVal + (usePercent ? "%" : ""), achievementX, achievementY);
+              }
             }
           } else {
             // 无目标值时：只显示达成值标签（居中）
@@ -593,7 +597,7 @@
               const val = dataset.data[i];
               if (val === null) continue;
               const centerY = (bar.y + bar.base) / 2;
-              ctx.fillStyle = "#ffffff";
+              ctx.fillStyle = "#000000";
               ctx.fillText(val + (usePercent ? "%" : ""), bar.x, centerY);
             }
           }
