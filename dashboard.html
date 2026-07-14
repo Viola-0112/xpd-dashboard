@@ -200,6 +200,11 @@
       return isNaN(num) ? null : num;
     }
 
+    function isPercentageValue(val) {
+      if (!val || val === "NA" || val === "") return false;
+      return String(val).trim().endsWith("%");
+    }
+
     function formatRate(rate) {
       if (rate === null || rate === undefined) return "--";
       return (rate * 100).toFixed(1) + "%";
@@ -223,7 +228,9 @@
         achievementNum: parseValue(r.monthlyAchievement),
         targetNum: parseValue(r.monthlyTarget),
         totalNum: parseValue(r.total),
-        rateNum: r.achievementRate
+        rateNum: r.achievementRate,
+        achievementIsPercent: isPercentageValue(r.monthlyAchievement),
+        targetIsPercent: isPercentageValue(r.monthlyTarget)
       }));
       categories = [...new Set(indicators.map(r => r.category))];
     }
@@ -514,7 +521,10 @@
 
       const bs = cfg.bodySize || 12;
 
-      // 自定义插件：绘制目标值到达成值的连接线 + 柱顶数值标签
+      // 判断数据是否为百分比格式
+      const usePercent = data.some(r => r.achievementIsPercent);
+
+      // 自定义插件：绘制目标值到达成值的连接线 + 柱中数值标签
       const connectorPlugin = {
         id: "targetAchievementConnector",
         afterDraw(chart) {
@@ -526,10 +536,10 @@
           ctx.save();
           ctx.font = `${bs}px sans-serif`;
           ctx.textAlign = "center";
-          ctx.textBaseline = "bottom";
+          ctx.textBaseline = "middle";
 
           if (cfg.showTarget && chart.data.datasets[1]) {
-            // 有目标值时：绘制连接线 + 两个柱子的数值标签
+            // 有目标值时：绘制连接线 + 两个柱子的数值标签（居中显示）
             const targetDataset = chart.data.datasets[0];
             const achievementDataset = chart.data.datasets[1];
             const meta1 = chart.getDatasetMeta(1);
@@ -565,24 +575,26 @@
               ctx.fillStyle = lineColor;
               ctx.fill();
 
-              // 目标值柱子顶部标签
-              ctx.fillStyle = "#64748b";
-              ctx.fillText(targetVal + "%", targetX, targetY - 4);
+              // 目标值柱子居中标签
+              const targetCenterY = (targetBar.y + targetBar.base) / 2;
+              ctx.fillStyle = "#ffffff";
+              ctx.fillText(targetVal + (usePercent ? "%" : ""), targetX, targetCenterY);
 
-              // 达成值柱子顶部标签
-              ctx.fillStyle = achievementVal >= targetVal ? "#22c55e" : "#ef4444";
-              ctx.fillText(achievementVal + "%", achievementX, achievementBar.y - 4);
+              // 达成值柱子居中标签
+              ctx.fillStyle = achievementVal >= targetVal ? "#ffffff" : "#ffffff";
+              ctx.fillText(achievementVal + (usePercent ? "%" : ""), achievementX, achievementY);
             }
           } else {
-            // 无目标值时：只显示达成值标签
+            // 无目标值时：只显示达成值标签（居中）
             const dataset = chart.data.datasets[0];
             for (let i = 0; i < meta0.data.length; i++) {
               const bar = meta0.data[i];
               if (!bar) continue;
               const val = dataset.data[i];
               if (val === null) continue;
-              ctx.fillStyle = "#3b82f6";
-              ctx.fillText(val + "%", bar.x, bar.y - 4);
+              const centerY = (bar.y + bar.base) / 2;
+              ctx.fillStyle = "#ffffff";
+              ctx.fillText(val + (usePercent ? "%" : ""), bar.x, centerY);
             }
           }
           ctx.restore();
@@ -597,17 +609,17 @@
           plugins: {
             legend: { display: cfg.chartType === "pie" || cfg.chartType === "doughnut" || cfg.showTarget, labels: { font: { size: bs } } },
             tooltip: { bodyFont: { size: bs }, titleFont: { size: bs }, callbacks: { label: ctx => {
-              if (cfg.chartType === "pie" || cfg.chartType === "doughnut") return ctx.label + ": " + ctx.parsed + "%";
-              return ctx.dataset.label + ": " + ctx.parsed.y + "%";
+              if (cfg.chartType === "pie" || cfg.chartType === "doughnut") return ctx.label + ": " + ctx.parsed + (usePercent ? "%" : "");
+              return ctx.dataset.label + ": " + ctx.parsed.y + (usePercent ? "%" : "");
             }}},
             title: { display: false }
           },
           scales: (cfg.chartType === "pie" || cfg.chartType === "doughnut") ? {} : {
             x: { grid: { display: false }, ticks: { font: { size: bs } } },
-            y: { grid: { color: "#f1f5f9" }, ticks: { callback: v => v + "%", font: { size: bs } } }
+            y: { grid: { color: "#f1f5f9" }, ticks: { callback: v => v + (usePercent ? "%" : ""), font: { size: bs } } }
           }
         },
-        plugins: cfg.showTarget && cfg.chartType === "bar" ? [connectorPlugin] : []
+        plugins: cfg.chartType === "bar" ? [connectorPlugin] : []
       });
     }
 
