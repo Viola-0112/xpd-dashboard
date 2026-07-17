@@ -238,17 +238,28 @@
     processData(rawRecords);
 
     const COLOR_MAP = {
-      blue: { bg: "bg-blue-500", grad: "from-blue-500 to-blue-600", text: "text-blue-600", light: "bg-blue-50" },
-      indigo: { bg: "bg-indigo-500", grad: "from-indigo-500 to-indigo-600", text: "text-indigo-600", light: "bg-indigo-50" },
-      cyan: { bg: "bg-cyan-500", grad: "from-cyan-500 to-cyan-600", text: "text-cyan-600", light: "bg-cyan-50" },
-      emerald: { bg: "bg-emerald-500", grad: "from-emerald-500 to-emerald-600", text: "text-emerald-600", light: "bg-emerald-50" },
-      amber: { bg: "bg-amber-500", grad: "from-amber-500 to-amber-600", text: "text-amber-600", light: "bg-amber-50" },
-      rose: { bg: "bg-rose-500", grad: "from-rose-500 to-rose-600", text: "text-rose-600", light: "bg-rose-50" },
-      purple: { bg: "bg-purple-500", grad: "from-purple-500 to-purple-600", text: "text-purple-600", light: "bg-purple-50" },
-      slate: { bg: "bg-slate-500", grad: "from-slate-500 to-slate-600", text: "text-slate-600", light: "bg-slate-50" },
-      orange: { bg: "bg-orange-500", grad: "from-orange-500 to-orange-600", text: "text-orange-600", light: "bg-orange-50" },
-      pink: { bg: "bg-pink-500", grad: "from-pink-500 to-pink-600", text: "text-pink-600", light: "bg-pink-50" }
+      blue: { bg: "bg-blue-500", grad: "from-blue-500 to-blue-600", text: "text-blue-600", light: "bg-blue-50", hex: "#3b82f6" },
+      indigo: { bg: "bg-indigo-500", grad: "from-indigo-500 to-indigo-600", text: "text-indigo-600", light: "bg-indigo-50", hex: "#6366f1" },
+      cyan: { bg: "bg-cyan-500", grad: "from-cyan-500 to-cyan-600", text: "text-cyan-600", light: "bg-cyan-50", hex: "#06b6d4" },
+      emerald: { bg: "bg-emerald-500", grad: "from-emerald-500 to-emerald-600", text: "text-emerald-600", light: "bg-emerald-50", hex: "#10b981" },
+      amber: { bg: "bg-amber-500", grad: "from-amber-500 to-amber-600", text: "text-amber-600", light: "bg-amber-50", hex: "#f59e0b" },
+      rose: { bg: "bg-rose-500", grad: "from-rose-500 to-rose-600", text: "text-rose-600", light: "bg-rose-50", hex: "#f43f5e" },
+      purple: { bg: "bg-purple-500", grad: "from-purple-500 to-purple-600", text: "text-purple-600", light: "bg-purple-50", hex: "#a855f7" },
+      slate: { bg: "bg-slate-500", grad: "from-slate-500 to-slate-600", text: "text-slate-600", light: "bg-slate-50", hex: "#64748b" },
+      orange: { bg: "bg-orange-500", grad: "from-orange-500 to-orange-600", text: "text-orange-600", light: "bg-orange-50", hex: "#f97316" },
+      pink: { bg: "bg-pink-500", grad: "from-pink-500 to-pink-600", text: "text-pink-600", light: "bg-pink-50", hex: "#ec4899" }
     };
+
+    function getChartColor(colorName, alpha) {
+      const hex = COLOR_MAP[colorName]?.hex || "#3b82f6";
+      if (alpha !== undefined) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r},${g},${b},${alpha})`;
+      }
+      return hex;
+    }
 
     const ALL_COLORS = Object.keys(COLOR_MAP);
 
@@ -263,7 +274,7 @@
         { name: "XPD系统", color: "cyan", field: "monthlyAchievement", showRemark: true, colSpan: 3 },
         { name: "流程培训场次", color: "emerald", field: "monthlyAchievement", showRemark: true, colSpan: 3 }
       ]};
-      if (type === "chart") return { ...base, title: "图表", type: "chart", chartType: "bar", filterCategory: "", filterNamePrefix: "", showTarget: false, showRemark: false };
+      if (type === "chart") return { ...base, title: "图表", type: "chart", chartType: "bar", filterCategory: "", filterNamePrefix: "", showTarget: false, showRemark: false, barColor: "blue", targetColor: "slate" };
       if (type === "combo") return { ...base, title: "组合卡片", type: "combo", items: [{ name: "XPD项目", color: "blue", label: "指标", field: "monthlyAchievement", showRemark: true, colSpan: 6 }] };
       if (type === "table") return { ...base, title: "数据表格", type: "table", dataSource: "main", filterCategory: "" };
       return { ...base, title: "组件", type: "chart", chartType: "bar", filterCategory: "", filterNamePrefix: "", showTarget: false };
@@ -339,6 +350,11 @@
         // 向后兼容：图表默认不显示备注
         if (cfg.type === "chart" && cfg.showRemark === undefined) {
           cfg.showRemark = false;
+        }
+        // 向后兼容：图表默认颜色
+        if (cfg.type === "chart") {
+          if (!cfg.barColor) cfg.barColor = "blue";
+          if (!cfg.targetColor) cfg.targetColor = "slate";
         }
         return item;
       });
@@ -489,26 +505,31 @@
       const datasets = [];
 
       if (cfg.chartType === "bar" || cfg.chartType === "line") {
-        // 动态颜色：有目标值且实际达成低于目标的标记为红色，否则为蓝色
+        const barColor = getChartColor(cfg.barColor || "blue");
+        const targetColor = getChartColor(cfg.targetColor || "slate");
+        const barColorAlpha = getChartColor(cfg.barColor || "blue", 0.1);
+        const targetColorAlpha = getChartColor(cfg.targetColor || "slate", 0.1);
+
+        // 动态颜色：有目标值且实际达成低于目标的标记为红色，否则为配置的达成值颜色
         const achievementColors = data.map(r => {
           if (r.targetNum !== null && r.targetNum !== 0 && r.achievementNum !== null && r.achievementNum < r.targetNum) {
             return "#ef4444"; // 红色：未达标
           }
-          return "#3b82f6"; // 蓝色：达标或无目标
+          return barColor; // 配置的达成值颜色：达标或无目标
         });
         // 目标值放左边，达成值放右边
         if (cfg.showTarget) {
           datasets.push({
             label: "月度目标", data: data.map(r => r.targetNum),
-            backgroundColor: cfg.chartType === "line" ? "rgba(148,163,184,0.1)" : "#94a3b8",
-            borderColor: "#94a3b8", borderWidth: 2, borderRadius: 4, barPercentage: 0.5,
+            backgroundColor: cfg.chartType === "line" ? targetColorAlpha : targetColor,
+            borderColor: targetColor, borderWidth: 2, borderRadius: 4, barPercentage: 0.5,
             fill: cfg.chartType === "line", tension: 0.3, type: cfg.chartType
           });
         }
         datasets.push({
           label: "月度实际", data: data.map(r => r.achievementNum),
-          backgroundColor: cfg.chartType === "line" ? "rgba(59,130,246,0.1)" : achievementColors,
-          borderColor: cfg.chartType === "line" ? "#3b82f6" : achievementColors,
+          backgroundColor: cfg.chartType === "line" ? barColorAlpha : achievementColors,
+          borderColor: cfg.chartType === "line" ? barColor : achievementColors,
           borderWidth: 2, borderRadius: 4, barPercentage: 0.5,
           fill: cfg.chartType === "line", tension: 0.3, type: cfg.chartType
         });
@@ -1017,6 +1038,19 @@
               </div>
             </div>
           </div>
+          <div class="config-section">
+            <div class="config-section-title">图表颜色</div>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">达成值颜色</label>
+                ${colorSwatches(cfg.barColor || "blue")}
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">目标值颜色</label>
+                ${colorSwatches(cfg.targetColor || "slate")}
+              </div>
+            </div>
+          </div>
         `;
       }
 
@@ -1097,6 +1131,26 @@
 
       const activeSwatch = document.querySelector(".color-swatch.active");
       if (activeSwatch) cfg.themeColor = activeSwatch.getAttribute("data-color");
+
+      // 读取图表颜色配置
+      if (cfg.type === "chart") {
+        const configForm = document.getElementById("configForm");
+        const sections = configForm.querySelectorAll(".config-section");
+        sections.forEach(section => {
+          const title = section.querySelector(".config-section-title");
+          if (title && title.textContent === "图表颜色") {
+            const swatchGroups = section.querySelectorAll(".space-y-3 > div");
+            if (swatchGroups[0]) {
+              const barSwatch = swatchGroups[0].querySelector(".color-swatch.active");
+              if (barSwatch) cfg.barColor = barSwatch.getAttribute("data-color");
+            }
+            if (swatchGroups[1]) {
+              const targetSwatch = swatchGroups[1].querySelector(".color-swatch.active");
+              if (targetSwatch) cfg.targetColor = targetSwatch.getAttribute("data-color");
+            }
+          }
+        });
+      }
 
       if (cfg.type === "kpi") {
         const container = document.getElementById("kpiItems");
