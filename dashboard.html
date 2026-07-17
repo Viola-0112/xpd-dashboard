@@ -274,7 +274,7 @@
         { name: "XPD系统", color: "cyan", field: "monthlyAchievement", showRemark: true, colSpan: 3 },
         { name: "流程培训场次", color: "emerald", field: "monthlyAchievement", showRemark: true, colSpan: 3 }
       ]};
-      if (type === "chart") return { ...base, title: "图表", type: "chart", chartType: "bar", filterCategory: "", filterNamePrefix: "", showTarget: false, showRemark: false, barColor: "blue", targetColor: "slate" };
+      if (type === "chart") return { ...base, title: "图表", type: "chart", chartType: "bar", filterCategory: "", filterNamePrefix: "", showTarget: false, showRemark: false, barColor: "blue", targetColor: "slate", remarkSize: 12, remarkColor: "#64748b" };
       if (type === "combo") return { ...base, title: "组合卡片", type: "combo", items: [{ name: "XPD项目", color: "blue", label: "指标", field: "monthlyAchievement", showRemark: true, colSpan: 6 }] };
       if (type === "table") return { ...base, title: "数据表格", type: "table", dataSource: "main", filterCategory: "" };
       return { ...base, title: "组件", type: "chart", chartType: "bar", filterCategory: "", filterNamePrefix: "", showTarget: false };
@@ -355,6 +355,8 @@
         if (cfg.type === "chart") {
           if (!cfg.barColor) cfg.barColor = "blue";
           if (!cfg.targetColor) cfg.targetColor = "slate";
+          if (!cfg.remarkSize) cfg.remarkSize = 12;
+          if (!cfg.remarkColor) cfg.remarkColor = "#64748b";
         }
         return item;
       });
@@ -478,14 +480,16 @@
       const canvasId = "chart-" + id;
       setTimeout(() => initChart(id, canvasId, cfg), 50);
       const bs = cfg.bodySize || 12;
+      const remarkSize = cfg.remarkSize || 12;
+      const remarkColor = cfg.remarkColor || "#64748b";
       let remarkHtml = "";
       if (cfg.showRemark) {
         let data = indicators;
         if (cfg.filterCategory) data = data.filter(r => r.category === cfg.filterCategory);
         if (cfg.filterNamePrefix) data = data.filter(r => r.name.startsWith(cfg.filterNamePrefix));
-        const remarks = data.filter(r => r.remark).map(r => `<span class="text-slate-500">${r.name}：</span><span class="font-semibold text-slate-600">${r.remark}</span>`);
+        const remarks = data.filter(r => r.remark).map(r => `<span style="color:${remarkColor}">${r.name}：</span><span style="color:${remarkColor};font-weight:600">${r.remark}</span>`);
         if (remarks.length > 0) {
-          remarkHtml = `<div class="mb-2 text-slate-500" style="font-size:${bs}px">${remarks.join("； ")}</div>`;
+          remarkHtml = `<div class="mb-2" style="font-size:${remarkSize}px;color:${remarkColor}">${remarks.join("； ")}</div>`;
         }
       }
       return `<div class="flex flex-col h-full">${remarkHtml}<div class="flex-1"><canvas id="${canvasId}"></canvas></div></div>`;
@@ -1039,6 +1043,22 @@
             </div>
           </div>
           <div class="config-section">
+            <div class="config-section-title">备注样式</div>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">备注字体大小 (px)</label>
+                <input type="number" id="cfg-remarkSize" value="${cfg.remarkSize || 12}" min="8" max="24" class="w-full text-sm border border-slate-200 rounded-md px-3 py-2">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">备注文字颜色</label>
+                <div class="flex items-center gap-2">
+                  <input type="color" id="cfg-remarkColor" value="${cfg.remarkColor || '#64748b'}" onchange="document.getElementById('cfg-remarkColorText').value=this.value" class="w-10 h-8 border border-slate-200 rounded cursor-pointer">
+                  <input type="text" id="cfg-remarkColorText" value="${cfg.remarkColor || '#64748b'}" oninput="document.getElementById('cfg-remarkColor').value=this.value" placeholder="#64748b" class="flex-1 text-sm border border-slate-200 rounded-md px-3 py-2 font-mono">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="config-section">
             <div class="config-section-title">图表颜色</div>
             <div class="space-y-3">
               <div>
@@ -1148,6 +1168,12 @@
               const targetSwatch = swatchGroups[1].querySelector(".color-swatch.active");
               if (targetSwatch) cfg.targetColor = targetSwatch.getAttribute("data-color");
             }
+          }
+          if (title && title.textContent === "备注样式") {
+            const remarkSizeInput = section.querySelector("#cfg-remarkSize");
+            const remarkColorInput = section.querySelector("#cfg-remarkColorText");
+            if (remarkSizeInput) cfg.remarkSize = parseInt(remarkSizeInput.value) || 12;
+            if (remarkColorInput) cfg.remarkColor = remarkColorInput.value || "#64748b";
           }
         });
       }
