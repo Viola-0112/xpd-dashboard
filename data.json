@@ -2,7 +2,7 @@
   "title": "XPD指标概览",
   "source": "https://xiaopeng.feishu.cn/wiki/YVCSwf2mViezJwkXPN8c5LB7nVe",
   "baseToken": "Sudzb3xqza2Qnps1MGVcERUFnPh",
-  "updatedAt": "2026-07-24T10:55:24.482Z",
+  "updatedAt": "2026-07-24T10:59:18.894Z",
   "tables": {
     "main": {
       "name": "主要指标",
@@ -15,7 +15,7 @@
           "name": "交付规范性-G类",
           "remark": "",
           "formula": "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)",
-          "total": "",
+          "total": "NA",
           "achievementRate": 1.031578947
         },
         {
@@ -25,7 +25,7 @@
           "name": "交付规范性-K类",
           "remark": "",
           "formula": "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)",
-          "total": "",
+          "total": "NA",
           "achievementRate": 1.025555556
         },
         {
@@ -35,7 +35,7 @@
           "name": "交付规范性-P类",
           "remark": "",
           "formula": "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)",
-          "total": "",
+          "total": "NA",
           "achievementRate": 1.075555556
         },
         {
@@ -45,7 +45,7 @@
           "name": "流程适用性-G类",
           "remark": "",
           "formula": "=1-不适用/(总数-进行中)",
-          "total": "",
+          "total": "NA",
           "achievementRate": 1.056470588
         },
         {
@@ -55,7 +55,7 @@
           "name": "流程适用性-K类",
           "remark": "",
           "formula": "=1-不适用/(总数-进行中)",
-          "total": "",
+          "total": "NA",
           "achievementRate": 1.016
         },
         {
@@ -65,7 +65,7 @@
           "name": "AI检核交付质量-G类",
           "remark": "*试运行期间暂无目标值",
           "formula": "=AVERAGE(AI1,AI2,...AIn)",
-          "total": "",
+          "total": "NA",
           "achievementRate": null
         },
         {
@@ -75,7 +75,7 @@
           "name": "AI检核交付质量-K类",
           "remark": "",
           "formula": "=AVERAGE(AI1,AI2,...AIn)",
-          "total": "",
+          "total": "NA",
           "achievementRate": null
         },
         {
@@ -85,7 +85,7 @@
           "name": "流程培训场次",
           "remark": "",
           "formula": "含火炬计划、千将计划、中心培训等。",
-          "total": "",
+          "total": "4",
           "achievementRate": 1
         },
         {
@@ -95,7 +95,7 @@
           "name": "流程满意度",
           "remark": "*06/26调研结果",
           "formula": "每半年度一次调研",
-          "total": "",
+          "total": "NA",
           "achievementRate": 1.003571429
         },
         {
@@ -105,7 +105,7 @@
           "name": "XPD项目",
           "remark": "",
           "formula": "本月监控&累计",
-          "total": "",
+          "total": "51",
           "achievementRate": null
         },
         {
@@ -115,7 +115,7 @@
           "name": "XPD任务",
           "remark": "",
           "formula": "本月监控&累计",
-          "total": "",
+          "total": "3.3W",
           "achievementRate": null
         },
         {
@@ -135,7 +135,7 @@
           "name": "XPD架构发布（L2&L3）",
           "remark": "",
           "formula": "本月发布&流程总数",
-          "total": "",
+          "total": "147",
           "achievementRate": null
         },
         {
@@ -155,7 +155,7 @@
           "name": "XPD流程发布（L4）",
           "remark": "",
           "formula": "本月发布&流程总数",
-          "total": "",
+          "total": "315",
           "achievementRate": null
         },
         {
@@ -175,7 +175,7 @@
           "name": "流程委员会运营",
           "remark": "",
           "formula": "PTC每半年度一次、XPD-PTC 每季度一次",
-          "total": "",
+          "total": "2",
           "achievementRate": 1
         },
         {
@@ -185,7 +185,7 @@
           "name": "流程问题管理",
           "remark": "",
           "formula": "=1-延期未完成/问题总数",
-          "total": "",
+          "total": "NA",
           "achievementRate": null
         }
       ]
@@ -3347,7 +3347,7 @@
       "name": "交付规范性-G类",
       "remark": "",
       "formula": "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)",
-      "total": "",
+      "total": "NA",
       "achievementRate": 1.031578947
     },
     {
@@ -3357,7 +3357,7 @@
       "name": "交付规范性-K类",
       "remark": "",
       "formula": "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)",
-      "total": "",
+      "total": "NA",
       "achievementRate": 1.025555556
     },
     {
@@ -3367,7 +3367,7 @@
       "name": "交付规范性-P类",
       "remark": "",
       "formula": "=[已完成+流程因素不适用(整改完成)]/(总数-项目因素不适用项目因素)",
-      "total": "",
+      "total": "NA",
       "achievementRate": 1.075555556
     },
     {
@@ -3377,7 +3377,7 @@
       "name": "流程适用性-G类",
       "remark": "",
       "formula": "=1-不适用/(总数-进行中)",
-      "total": "",
+      "total": "NA",
       "achievementRate": 1.056470588
     },
     {
@@ -3387,7 +3387,7 @@
       "name": "流程适用性-K类",
       "remark": "",
       "formula": "=1-不适用/(总数-进行中)",
-      "total": "",
+      "total": "NA",
       "achievementRate": 1.016
     },
     {
@@ -3397,7 +3397,7 @@
       "name": "AI检核交付质量-G类",
       "remark": "*试运行期间暂无目标值",
       "formula": "=AVERAGE(AI1,AI2,...AIn)",
-      "total": "",
+      "total": "NA",
       "achievementRate": null
     },
     {
@@ -3407,7 +3407,7 @@
       "name": "AI检核交付质量-K类",
       "remark": "",
       "formula": "=AVERAGE(AI1,AI2,...AIn)",
-      "total": "",
+      "total": "NA",
       "achievementRate": null
     },
     {
@@ -3417,7 +3417,7 @@
       "name": "流程培训场次",
       "remark": "",
       "formula": "含火炬计划、千将计划、中心培训等。",
-      "total": "",
+      "total": "4",
       "achievementRate": 1
     },
     {
@@ -3427,7 +3427,7 @@
       "name": "流程满意度",
       "remark": "*06/26调研结果",
       "formula": "每半年度一次调研",
-      "total": "",
+      "total": "NA",
       "achievementRate": 1.003571429
     },
     {
@@ -3437,7 +3437,7 @@
       "name": "XPD项目",
       "remark": "",
       "formula": "本月监控&累计",
-      "total": "",
+      "total": "51",
       "achievementRate": null
     },
     {
@@ -3447,7 +3447,7 @@
       "name": "XPD任务",
       "remark": "",
       "formula": "本月监控&累计",
-      "total": "",
+      "total": "3.3W",
       "achievementRate": null
     },
     {
@@ -3467,7 +3467,7 @@
       "name": "XPD架构发布（L2&L3）",
       "remark": "",
       "formula": "本月发布&流程总数",
-      "total": "",
+      "total": "147",
       "achievementRate": null
     },
     {
@@ -3487,7 +3487,7 @@
       "name": "XPD流程发布（L4）",
       "remark": "",
       "formula": "本月发布&流程总数",
-      "total": "",
+      "total": "315",
       "achievementRate": null
     },
     {
@@ -3507,7 +3507,7 @@
       "name": "流程委员会运营",
       "remark": "",
       "formula": "PTC每半年度一次、XPD-PTC 每季度一次",
-      "total": "",
+      "total": "2",
       "achievementRate": 1
     },
     {
@@ -3517,7 +3517,7 @@
       "name": "流程问题管理",
       "remark": "",
       "formula": "=1-延期未完成/问题总数",
-      "total": "",
+      "total": "NA",
       "achievementRate": null
     }
   ]
