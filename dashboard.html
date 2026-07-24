@@ -412,12 +412,12 @@
 
     function getSubLabel(item, subField) {
       if (subField === 'none') return '';
-      if (subField === 'total') return item.total && item.total !== 'NA' ? '累计：' + item.total : '';
+      if (subField === 'total') return item.total && item.total !== 'NA' ? '总计：' + item.total : '';
       if (subField === 'monthlyTarget') return item.monthlyTarget && item.monthlyTarget !== 'NA' ? '目标：' + item.monthlyTarget : '';
       if (subField === 'monthlyAchievement') return item.monthlyAchievement && item.monthlyAchievement !== 'NA' ? '达成：' + item.monthlyAchievement : '';
       if (subField === 'achievementRate') return item.rateNum !== null ? '达成率：' + formatRate(item.rateNum) : '';
       // 默认逻辑
-      if (item.total && item.total !== 'NA') return '累计：' + item.total;
+      if (item.total && item.total !== 'NA') return '总计：' + item.total;
       if (item.monthlyTarget && item.monthlyTarget !== 'NA') return '目标：' + item.monthlyTarget;
       return '';
     }
@@ -982,7 +982,7 @@
                     <select id="cfg-kpi-field-${idx}" class="text-xs border border-slate-200 rounded-md px-2 py-1">${fieldOptions.map(f => `<option value="${f.v}" ${it.field === f.v ? "selected" : ""}>${f.l}</option>`).join("")}</select>
                     <select id="cfg-kpi-color-${idx}" class="text-xs border border-slate-200 rounded-md px-2 py-1">${ALL_COLORS.map(c => `<option value="${c}" ${it.color === c ? "selected" : ""}>${c}</option>`).join("")}</select>
                     <input type="number" id="cfg-kpi-colSpan-${idx}" value="${it.colSpan || 3}" min="1" max="12" placeholder="宽度(1-12)" class="text-xs border border-slate-200 rounded-md px-2 py-1">
-                    <select id="cfg-kpi-subField-${idx}" class="text-xs border border-slate-200 rounded-md px-2 py-1">${[{v:'',l:'自动'},{v:'total',l:'累计'},{v:'monthlyTarget',l:'目标'},{v:'monthlyAchievement',l:'达成'},{v:'achievementRate',l:'达成率'},{v:'none',l:'不显示'}].map(f => `<option value="${f.v}" ${it.subField === f.v ? "selected" : ""}>${f.l}</option>`).join("")}</select>
+                    <select id="cfg-kpi-subField-${idx}" class="text-xs border border-slate-200 rounded-md px-2 py-1">${[{v:'',l:'自动'},{v:'total',l:'总计'},{v:'monthlyTarget',l:'目标'},{v:'monthlyAchievement',l:'达成'},{v:'achievementRate',l:'达成率'},{v:'none',l:'不显示'}].map(f => `<option value="${f.v}" ${it.subField === f.v ? "selected" : ""}>${f.l}</option>`).join("")}</select>
                   </div>
                   <div class="flex items-center gap-2 mt-2">
                     <input type="checkbox" id="cfg-kpi-showRemark-${idx}" ${it.showRemark ? "checked" : ""} class="rounded border-slate-300">
@@ -1013,7 +1013,7 @@
                     <select id="cfg-item-field-${idx}" class="text-xs border border-slate-200 rounded-md px-2 py-1">${fieldOptions.map(f => `<option value="${f.v}" ${it.field === f.v ? "selected" : ""}>${f.l}</option>`).join("")}</select>
                     <select id="cfg-item-color-${idx}" class="text-xs border border-slate-200 rounded-md px-2 py-1">${ALL_COLORS.map(c => `<option value="${c}" ${it.color === c ? "selected" : ""}>${c}</option>`).join("")}</select>
                     <input type="number" id="cfg-item-colSpan-${idx}" value="${it.colSpan || 6}" min="1" max="12" placeholder="宽度(1-12)" class="text-xs border border-slate-200 rounded-md px-2 py-1">
-                    <select id="cfg-item-subField-${idx}" class="text-xs border border-slate-200 rounded-md px-2 py-1">${[{v:'',l:'自动'},{v:'total',l:'累计'},{v:'monthlyTarget',l:'目标'},{v:'monthlyAchievement',l:'达成'},{v:'achievementRate',l:'达成率'},{v:'none',l:'不显示'}].map(f => `<option value="${f.v}" ${it.subField === f.v ? "selected" : ""}>${f.l}</option>`).join("")}</select>
+                    <select id="cfg-item-subField-${idx}" class="text-xs border border-slate-200 rounded-md px-2 py-1">${[{v:'',l:'自动'},{v:'total',l:'总计'},{v:'monthlyTarget',l:'目标'},{v:'monthlyAchievement',l:'达成'},{v:'achievementRate',l:'达成率'},{v:'none',l:'不显示'}].map(f => `<option value="${f.v}" ${it.subField === f.v ? "selected" : ""}>${f.l}</option>`).join("")}</select>
                   </div>
                   <div class="flex items-center gap-2 mt-2">
                     <input type="checkbox" id="cfg-item-showRemark-${idx}" ${it.showRemark !== false ? "checked" : ""} class="rounded border-slate-300">
