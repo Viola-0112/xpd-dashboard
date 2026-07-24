@@ -2,7 +2,7 @@
   "title": "XPD指标概览",
   "source": "https://xiaopeng.feishu.cn/wiki/YVCSwf2mViezJwkXPN8c5LB7nVe",
   "baseToken": "Sudzb3xqza2Qnps1MGVcERUFnPh",
-  "updatedAt": "2026-07-24T02:13:21.610Z",
+  "updatedAt": "2026-07-24T09:48:41.412Z",
   "tables": {
     "main": {
       "name": "主要指标",
@@ -105,7 +105,7 @@
           "name": "XPD项目",
           "remark": "",
           "formula": "本月监控&累计",
-          "total": "",
+          "total": "51",
           "achievementRate": null
         },
         {
@@ -3437,7 +3437,7 @@
       "name": "XPD项目",
       "remark": "",
       "formula": "本月监控&累计",
-      "total": "",
+      "total": "51",
       "achievementRate": null
     },
     {
