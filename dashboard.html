@@ -109,6 +109,11 @@
           <div class="text-sm font-medium text-slate-800">数据表格</div>
           <div class="text-xs text-slate-400 mt-0.5">明细数据列表</div>
         </div>
+        <div class="type-card" onclick="selectType('text')">
+          <div class="text-2xl mb-1">📝</div>
+          <div class="text-sm font-medium text-slate-800">文本</div>
+          <div class="text-xs text-slate-400 mt-0.5">自由编辑文本内容</div>
+        </div>
       </div>
     </div>
   </div>
@@ -277,6 +282,7 @@
       if (type === "chart") return { ...base, title: "图表", type: "chart", chartType: "bar", filterCategory: "", filterNamePrefix: "", showTarget: false, showRemark: false, barColor: "blue", targetColor: "slate", remarkSize: 12, remarkColor: "#64748b" };
       if (type === "combo") return { ...base, title: "组合卡片", type: "combo", items: [{ name: "XPD项目", color: "blue", label: "指标", field: "monthlyAchievement", showRemark: true, colSpan: 6 }] };
       if (type === "table") return { ...base, title: "数据表格", type: "table", dataSource: "main", filterCategory: "" };
+      if (type === "text") return { ...base, title: "文本", type: "text", content: "在此输入文本内容...", textColor: "#1e293b", textSize: 14 };
       return { ...base, title: "组件", type: "chart", chartType: "bar", filterCategory: "", filterNamePrefix: "", showTarget: false };
     }
 
@@ -358,6 +364,12 @@
           if (!cfg.remarkSize) cfg.remarkSize = 12;
           if (!cfg.remarkColor) cfg.remarkColor = "#64748b";
         }
+        // 向后兼容：文本组件默认值
+        if (cfg.type === "text") {
+          if (!cfg.content) cfg.content = "";
+          if (!cfg.textColor) cfg.textColor = "#1e293b";
+          if (!cfg.textSize) cfg.textSize = 14;
+        }
         return item;
       });
     }
@@ -394,6 +406,7 @@
       if (cfg.type === "combo") return renderComboBody(id, cfg);
       if (cfg.type === "chart") return renderChartBody(id, cfg);
       if (cfg.type === "table") return renderTableBody(id, cfg);
+      if (cfg.type === "text") return renderTextBody(id, cfg);
       return `<div class="p-4 text-slate-400">未知组件类型</div>`;
     }
 
@@ -708,6 +721,13 @@
           </div>
         </div>
       `;
+    }
+
+    function renderTextBody(id, cfg) {
+      const content = cfg.content || "";
+      const textColor = cfg.textColor || "#1e293b";
+      const textSize = cfg.textSize || 14;
+      return `<div class="p-4" style="color:${textColor};font-size:${textSize}px;line-height:1.6;white-space:pre-wrap;word-break:break-word;">${content}</div>`;
     }
 
     function filterTableBody(widgetId) {
@@ -1103,6 +1123,31 @@
         `;
       }
 
+      if (cfg.type === "text") {
+        html += `
+          <div class="config-section">
+            <div class="config-section-title">文本内容</div>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">文本内容</label>
+                <textarea id="cfg-content" rows="6" class="w-full text-sm border border-slate-200 rounded-md px-3 py-2 font-mono" placeholder="在此输入文本内容...">${(cfg.content || "").replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">字体大小 (px)</label>
+                <input type="number" id="cfg-textSize" value="${cfg.textSize || 14}" min="8" max="72" class="w-full text-sm border border-slate-200 rounded-md px-3 py-2">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">文字颜色</label>
+                <div class="flex items-center gap-2">
+                  <input type="color" id="cfg-textColor" value="${cfg.textColor || '#1e293b'}" onchange="document.getElementById('cfg-textColorText').value=this.value" class="w-10 h-8 border border-slate-200 rounded cursor-pointer">
+                  <input type="text" id="cfg-textColorText" value="${cfg.textColor || '#1e293b'}" oninput="document.getElementById('cfg-textColor').value=this.value" placeholder="#1e293b" class="flex-1 text-sm border border-slate-200 rounded-md px-3 py-2 font-mono">
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
       form.innerHTML = html;
       document.getElementById("configOverlay").classList.add("active");
     }
@@ -1227,6 +1272,15 @@
         } else {
           cfg.filterCategory = "";
         }
+      }
+
+      if (cfg.type === "text") {
+        const contentEl = document.getElementById("cfg-content");
+        const textSizeEl = document.getElementById("cfg-textSize");
+        const textColorEl = document.getElementById("cfg-textColorText");
+        if (contentEl) cfg.content = contentEl.value;
+        if (textSizeEl) cfg.textSize = parseInt(textSizeEl.value) || 14;
+        if (textColorEl) cfg.textColor = textColorEl.value || "#1e293b";
       }
 
       const titleEl = document.getElementById("title-" + activeConfigWidget);
